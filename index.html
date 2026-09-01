@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NoteGG - Music Theory Practice</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vexflow/build/cjs/vexflow.js"></script>
+</head>
+<body>
+
+    <div class="paper-texture"></div>
+
+    <div id="menu-container" class="screen">
+        <h1 style="font-family: 'Cinzel', serif; font-size: 2.5rem; margin-bottom: 5px; letter-spacing: 2px;">NOTEGG</h1>
+        <p class="subtitle" style="margin-bottom: 25px;">Music Theory Practice</p>
+        
+        <div class="menu-options">
+            <button id="goto-lessons-menu" class="menu-btn">Lessons</button>
+            <button id="goto-exercises-menu" class="menu-btn">Exercises</button>
+        </div>
+    </div>
+
+    <div id="lessons-menu-container" class="screen hidden">
+        <h1>Lessons</h1>
+        <p class="subtitle">Learn music theory fundamentals</p>
+        <div class="menu-options">
+            <button class="lesson-select-btn menu-btn" data-lesson="dynamics">Dynamics</button>
+            <button class="lesson-select-btn menu-btn" data-lesson="length">Length of the Notes</button>
+            <button class="lesson-select-btn menu-btn" data-lesson="signs">Signs of Music</button>
+            <button id="back-to-main-from-lessons" class="menu-btn back-sub-btn">← Back</button>
+        </div>
+    </div>
+
+    <div id="lesson-content-container" class="screen hidden">
+        <h1 id="lesson-title">Lesson Title</h1>
+        <div id="lesson-body" class="lesson-text-body"></div>
+        <button id="back-to-lessons-menu" class="menu-btn back-sub-btn">← Back to Lessons</button>
+    </div>
+
+    <div id="exercises-menu-container" class="screen hidden">
+        <h1>Exercises</h1>
+        <p class="subtitle">Practice your skills</p>
+        <div class="menu-options">
+            <button id="goto-sight-reading" class="menu-btn">Note Reading</button>
+            <button id="goto-scales-menu" class="menu-btn">Scales</button>
+            <button id="back-to-main-from-exercises" class="menu-btn back-sub-btn">← Back</button>
+        </div>
+    </div>
+
+    <div id="mode-menu-container" class="screen hidden">
+        <h1>Note Reading</h1>
+        <p class="subtitle">Choose game mode</p>
+        <div class="menu-options">
+            <button class="mode-select-btn menu-btn" data-type="timeAttack">Timer (60s)</button>
+            <button class="mode-select-btn menu-btn" data-type="practice">Normal</button>
+            <button id="back-to-exercises" class="menu-btn back-sub-btn">← Back</button>
+        </div>
+    </div>
+
+    <div id="scales-menu-container" class="screen hidden">
+        <h1>Scales</h1>
+        <p class="subtitle">Choose scale category</p>
+        <div class="menu-options">
+            <button id="goto-major-menu" class="menu-btn">Major Scales</button>
+            <button id="goto-minor-menu" class="menu-btn">Minor Scales</button>
+            <button class="scale-select-btn menu-btn" data-scale="random">Random Scale</button>
+            <button id="back-to-exercises-from-scales" class="menu-btn back-sub-btn">← Back</button>
+        </div>
+    </div>
+
+    <div id="major-menu-container" class="screen hidden">
+        <h1>Major Scales</h1>
+        <p class="subtitle">Select a key</p>
+        <div class="menu-grid" id="major-scales-grid"></div>
+        <button id="back-to-scales-main" class="menu-btn back-sub-btn" style="margin-top: 15px; width: 100%;">← Back</button>
+    </div>
+
+    <div id="minor-menu-container" class="screen hidden">
+        <h1>Minor Scales</h1>
+        <p class="subtitle">Select a key</p>
+        <div class="menu-grid" id="minor-scales-grid"></div>
+        <button id="back-to-scales-main-minor" class="menu-btn back-sub-btn" style="margin-top: 15px; width: 100%;">← Back</button>
+    </div>
+
+    <div id="clef-menu-container" class="screen hidden">
+        <h1>Note Reading</h1>
+        <p class="subtitle">Choose your clef range</p>
+        <div class="menu-options">
+            <button class="clef-select-btn menu-btn" data-mode="treble">Treble Only</button>
+            <button class="clef-select-btn menu-btn" data-mode="bass">Bass Only</button>
+            <button class="clef-select-btn menu-btn" data-mode="both">Both</button>
+            <button id="back-to-mode" class="menu-btn back-sub-btn">← Back</button>
+        </div>
+    </div>
+
+    <div id="game-container" class="screen hidden">
+        <div class="game-header">
+            <button id="back-to-clef-menu" class="back-btn">← Back</button>
+            <div class="game-stats">
+                <span id="timer-wrapper">Time: <span id="timer">60</span>s</span>
+                <span>Score: <span id="score">0</span></span>
+            </div>
+        </div>
+        
+        <div id="staff-container"></div>
+        
+        <div id="question-box">Identify this note:</div>
+        
+        <div id="game-controls">
+            <button id="restart-btn" class="menu-btn hidden">Play Again</button>
+        </div>
+        
+        <div id="piano-container">
+            <div class="white-keys" id="white-keys-container"></div>
+            <div id="black-keys-container"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
