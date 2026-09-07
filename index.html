@@ -73,7 +73,7 @@
 
         <section id="practice-screen" class="screen content-screen hidden">
             <div class="page-heading">
-                <div><p class="section-label">PRACTICE</p><h1>Choose an exercise</h1><p>Practice for as long as you want.</p></div>
+                <div><p class="section-label">PRACTICE</p><h1>Choose an exercise</h1><p>Choose a topic and begin.</p></div>
             </div>
             <div class="practice-grid">
                 <button class="practice-card" type="button" data-exercise="reading"><span class="practice-type">NOTES</span><strong>Note Reading</strong><small>Read the staff and choose the piano key.</small><span class="card-link">Start →</span></button>
@@ -88,7 +88,7 @@
                 <h1>Choose a clef</h1>
                 <p>The keyboard and written-note range will adjust automatically.</p>
                 <div class="option-list" role="radiogroup" aria-label="Clef">
-                    <button class="option-button selected" type="button" data-clef="treble" role="radio" aria-checked="true"><span><strong>Treble clef</strong><small>A3–C6</small></span><span>Recommended</span></button>
+                    <button class="option-button selected" type="button" data-clef="treble" role="radio" aria-checked="true"><span><strong>Treble clef</strong><small>A3–C6</small></span></button>
                     <button class="option-button" type="button" data-clef="bass" role="radio" aria-checked="false"><span><strong>Bass clef</strong><small>C2–E4</small></span></button>
                     <button class="option-button" type="button" data-clef="both" role="radio" aria-checked="false"><span><strong>Both clefs</strong><small>Mixed practice</small></span></button>
                 </div>
@@ -99,8 +99,6 @@
         <section id="exercise-screen" class="screen exercise-screen hidden">
             <div class="exercise-topbar">
                 <button class="text-button" type="button" data-go="practice">← Exit</button>
-                <div class="exercise-session-label">Unlimited practice</div>
-                <span id="exercise-counter">0 answered</span>
             </div>
             <div class="exercise-workspace">
                 <div class="exercise-heading"><p class="section-label" id="exercise-label">NOTE READING</p><h1 id="exercise-title">Play the written note</h1><p id="exercise-instruction">Choose the matching piano key.</p></div>
@@ -115,6 +113,6 @@
     </main>
 
     <footer class="site-footer"><span>NoteGG</span><span>Music theory made clear.</span></footer>
-    <script src="app.js?v=3"></script>
+    <script src="app.js?v=6"></script>
 </body>
 </html>
