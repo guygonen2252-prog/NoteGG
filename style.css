@@ -522,3 +522,65 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
     * { scroll-behavior: auto !important; transition: none !important; }
 }
+
+
+.mini-practice-start {
+    margin-top: 18px;
+    padding: 10px 16px;
+    border: 1px solid var(--navy);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--navy);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.mini-practice-start:hover {
+    background: var(--navy);
+    color: #fff;
+}
+
+.mini-practice {
+    margin-top: 14px;
+    padding: 20px;
+    border-left: 3px solid var(--gold);
+    background: var(--gold-soft);
+}
+
+.mini-practice-count,
+.mini-practice-prompt {
+    display: block;
+}
+
+.mini-practice-count {
+    margin-bottom: 8px;
+    color: var(--gold);
+    font-size: .78rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.mini-practice-prompt {
+    color: var(--navy);
+    font-size: 1rem;
+}
+
+.mini-practice-symbol {
+    margin: 16px 0;
+    color: var(--navy);
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+.mini-practice-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.mini-practice-complete {
+    margin: 0;
+    color: var(--success) !important;
+    font-weight: 600;
+}
