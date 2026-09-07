@@ -444,9 +444,21 @@ function openCourse(index) {
                             `
                             : ""
                     }
+                    ${section.visual || section.chips ? `
+                        <button class="mini-practice-start" type="button" data-mini-start="${sectionIndex}">
+                            Try it
+                        </button>
+                        <div class="mini-practice hidden" data-mini-panel="${sectionIndex}"></div>
+                    ` : ""}
                 </div>
             </section>
         `).join("");
+
+    document.querySelectorAll("[data-mini-start]").forEach(button => {
+        button.addEventListener("click", () => {
+            startMiniPractice(course, Number(button.dataset.miniStart));
+        });
+    });
 
     const previous = document.getElementById("previous-course");
     const next = document.getElementById("next-course");
@@ -465,6 +477,134 @@ function openCourse(index) {
         renderCourseVisuals(course);
     });
 }
+
+function shuffled(values) {
+    return [...values].sort(() => Math.random() - 0.5);
+}
+
+function miniPracticeQuestions(course, sectionIndex) {
+    const section = course.sections[sectionIndex];
+
+    if (section.chips) {
+        const allLabels = courses
+            .flatMap(item => item.sections)
+            .flatMap(item => item.chips || [])
+            .map(chip => chip[1]);
+
+        return shuffled(section.chips).slice(0, 3).map(chip => ({
+            prompt: "What does this symbol mean?",
+            display: chip[0],
+            correct: chip[1],
+            options: shuffled([
+                chip[1],
+                ...shuffled([...new Set(allLabels)])
+                    .filter(label => label !== chip[1])
+                    .slice(0, 3)
+            ])
+        }));
+    }
+
+    if (section.visual) {
+        const type = section.visual.type;
+        const peers = courses
+            .flatMap(item => item.sections)
+            .filter(item => item.visual && item.visual.type === type)
+            .map(item => item.title);
+
+        return [{
+            prompt: type === "key"
+                ? "Which key signature is shown?"
+                : type === "scale"
+                    ? "Which scale is shown?"
+                    : "Which example is shown?",
+            display: "Look at the notation above",
+            correct: section.title,
+            options: shuffled([
+                section.title,
+                ...shuffled([...new Set(peers)])
+                    .filter(title => title !== section.title)
+                    .slice(0, 3)
+            ])
+        }];
+    }
+
+    return [];
+}
+
+function startMiniPractice(course, sectionIndex) {
+    document.querySelectorAll(".mini-practice").forEach(panel => {
+        panel.classList.add("hidden");
+        panel.innerHTML = "";
+    });
+
+    const panel = document.querySelector(
+        '[data-mini-panel="' + sectionIndex + '"]'
+    );
+    const questions = miniPracticeQuestions(course, sectionIndex);
+    if (!panel || !questions.length) return;
+
+    panel.classList.remove("hidden");
+    renderMiniPractice(panel, questions, 0);
+}
+
+function renderMiniPractice(panel, questions, questionIndex) {
+    panel.innerHTML = "";
+
+    if (questionIndex >= questions.length) {
+        const complete = document.createElement("p");
+        complete.className = "mini-practice-complete";
+        complete.textContent = "Done — continue the lesson.";
+        panel.appendChild(complete);
+        return;
+    }
+
+    const question = questions[questionIndex];
+    const label = document.createElement("small");
+    label.className = "mini-practice-count";
+    label.textContent = "Quick check " + (questionIndex + 1) + " of " + questions.length;
+
+    const prompt = document.createElement("strong");
+    prompt.className = "mini-practice-prompt";
+    prompt.textContent = question.prompt;
+
+    const display = document.createElement("div");
+    display.className = "mini-practice-symbol";
+    display.textContent = question.display;
+
+    const options = document.createElement("div");
+    options.className = "mini-practice-options";
+
+    question.options.forEach(value => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "answer-option";
+        button.textContent = value;
+
+        button.addEventListener("click", () => {
+            if (options.dataset.answered) return;
+            options.dataset.answered = "true";
+            const correct = value === question.correct;
+            button.classList.add(correct ? "correct" : "incorrect");
+
+            if (!correct) {
+                [...options.children].forEach(option => {
+                    if (option.textContent === question.correct) {
+                        option.classList.add("correct");
+                    }
+                });
+            }
+
+            setTimeout(() => {
+                renderMiniPractice(panel, questions, questionIndex + 1);
+            }, 650);
+        });
+
+        options.appendChild(button);
+    });
+
+    panel.append(label, prompt, display, options);
+}
+
 
 function renderCourseVisuals(course) {
     document
