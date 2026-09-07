@@ -126,7 +126,7 @@ const courses = [
         summary: "Each note and rest symbol represents a specific length of sound or silence.",
         takeaway: "Notes create sound. Rests create silence. Their values are counted in the same way.",
         sections: [
-            { title: "The beat", text: "The beat is the steady pulse of the music.", chips: [["♩  ♩  ♩  ♩", "CountCount: 1  2  3  4"]] },
+            { title: "The beat", text: "The beat is the steady pulse of the music.", chips: [["♩  ♩  ♩  ♩", "Count: 1  2  3  4"]] },
             { title: "Notes", text: "Learn each note by its proper name.", chips: [["𝅝", "Whole note"], ["𝅗𝅥", "Half note"], ["♩", "Quarter note"], ["♪", "Eighth note"], ["𝅘𝅥𝅯", "Sixteenth note"]] },
             { title: "Rests", text: "Rests use the same lengths, but represent silence.", chips: [["𝄻", "Whole rest"], ["𝄼", "Half rest"], ["𝄽", "Quarter rest"], ["𝄾", "Eighth rest"], ["𝄿", "Sixteenth rest"]] }
         ]
