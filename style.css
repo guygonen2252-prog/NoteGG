@@ -300,6 +300,63 @@ h1 {
     font-weight: 500;
 }
 
+.lesson-visual-wide {
+    grid-template-columns: 1fr;
+}
+
+.lesson-visual-wide .lesson-staff {
+    width: 100%;
+    max-width: 560px;
+}
+
+.mini-keyboard {
+    position: relative;
+    width: min(310px, 100%);
+    height: 132px;
+    border: 2px solid var(--navy);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--navy);
+}
+
+.mini-white-keys {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    height: 100%;
+    gap: 1px;
+}
+
+.mini-white-key {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 10px;
+    background: #fff;
+    color: var(--muted);
+    font-size: .82rem;
+    font-weight: 600;
+}
+
+.mini-white-key.landmark {
+    color: var(--gold);
+    box-shadow: inset 0 -4px 0 var(--gold);
+}
+
+.mini-black-key {
+    position: absolute;
+    top: 0;
+    width: 9%;
+    height: 62%;
+    border-radius: 0 0 4px 4px;
+    background: var(--navy);
+}
+
+.black-1 { left: 10%; }
+.black-2 { left: 24%; }
+.black-3 { left: 52.5%; }
+.black-4 { left: 67%; }
+.black-5 { left: 81%; }
+
 .course-footer { padding: 28px 58px; background: var(--navy); color: #f7f4ec; }
 .course-footer p { margin-bottom: 20px; color: rgba(247, 244, 236, 0.78); }
 .course-footer-actions { display: flex; gap: 10px; }
