@@ -903,7 +903,7 @@ function renderRhythmQuestion() {
     currentQuestion = pool[Math.floor(Math.random() * pool.length)];
 
     document.getElementById("exercise-label").textContent =
-        activeExercise === "rests" ? "RESTS" : "NOTE VALUES";
+        activeExercise === "rests" ? "NOTE RESTS" : "NOTE DURATION";
     document.getElementById("exercise-title").textContent =
         activeExercise === "rests" ? "What rest is this?" : "What note is this?";
     document.getElementById("exercise-instruction").textContent =
