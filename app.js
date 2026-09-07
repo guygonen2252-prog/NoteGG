@@ -402,10 +402,12 @@ function renderCourseVisuals(course) {
                     width: width - 30
                 });
 
+            const duration = visual.type === "notes" && visual.notes.length === 1 ? "w" : "h";
+
             const notes =
                 visual.type === "notes"
                     ? visual.notes
-                        .map(note => `${note}/q`)
+                        .map(note => `${note}/${duration}`)
                         .join(", ")
                     : "c5/w";
 
@@ -416,7 +418,7 @@ function renderCourseVisuals(course) {
                             score.notes(notes, {
                                 clef: visual.clef
                             })
-                        ).setStrict(false)
+                        )
                     ]
                 })
                 .addClef(visual.clef);
