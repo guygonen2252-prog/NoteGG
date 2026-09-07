@@ -416,7 +416,7 @@ function renderCourseVisuals(course) {
                             score.notes(notes, {
                                 clef: visual.clef
                             })
-                        )
+                        ).setStrict(false)
                     ]
                 })
                 .addClef(visual.clef);
