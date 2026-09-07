@@ -132,8 +132,8 @@ const courses = [
             },
             {
                 title: "Rests",
-                text: "A rest is silence that still takes time.",
-                example: "Keep counting during every rest."
+                text: "A rest marks silence. Its shape shows how long the silence lasts.",
+                chips: [["𝄽", "Quarter rest"], ["𝄾", "Eighth rest"], ["𝄿", "Sixteenth rest"]]
             }
         ]
     },
@@ -203,7 +203,10 @@ const courses = [
 const rhythmQuestions = [
     { symbol: "♩", name: "Quarter note" },
     { symbol: "♪", name: "Eighth note" },
-    { symbol: "𝅘𝅥𝅯", name: "Sixteenth note" }
+    { symbol: "𝅘𝅥𝅯", name: "Sixteenth note" },
+    { symbol: "𝄽", name: "Quarter rest" },
+    { symbol: "𝄾", name: "Eighth rest" },
+    { symbol: "𝄿", name: "Sixteenth rest" }
 ];
 
 const screens = {
@@ -218,7 +221,6 @@ const screens = {
 let selectedCourseIndex = 0;
 let selectedClef = "treble";
 let activeExercise = "reading";
-let answeredQuestions = 0;
 let currentQuestion = null;
 let answerLocked = false;
 let sessionToken = 0;
@@ -709,7 +711,6 @@ function clearExerciseState() {
 
 function startExercise(type) {
     activeExercise = type;
-    answeredQuestions = 0;
     answerLocked = false;
 
     showScreen("exercise");
@@ -720,9 +721,6 @@ function renderQuestion() {
     answerLocked = false;
 
     clearExerciseState();
-
-    document.getElementById("exercise-counter").textContent =
-        `${answeredQuestions} answered`;
 
     if (activeExercise === "reading") {
         renderReadingQuestion();
@@ -942,11 +940,6 @@ function finishAnswer(correct, key, correctLabel) {
         feedback.className =
             "feedback error";
     }
-
-    answeredQuestions++;
-
-    document.getElementById("exercise-counter").textContent =
-        `${answeredQuestions} answered`;
 
     setTimeout(() => {
         if (token !== sessionToken) {
