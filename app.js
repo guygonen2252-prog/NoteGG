@@ -119,12 +119,11 @@ const courses = [
             },
             {
                 title: "Note values",
-                text: "These are the four values to learn first.",
+                text: "Learn the main beat divisions.",
                 chips: [
-                    ["𝅝", "4 beats"],
-                    ["𝅗𝅥", "2 beats"],
-                    ["♩", "1 beat"],
-                    ["♪", "½ beat"]
+                    ["♩", "Quarter note — 1 beat"],
+                    ["♪", "Eighth note — ½ beat"],
+                    ["𝅘𝅥𝅯", "Sixteenth note — ¼ beat"]
                 ]
             },
             {
@@ -188,10 +187,9 @@ const courses = [
 ];
 
 const rhythmQuestions = [
-    { symbol: "𝅝", value: "4" },
-    { symbol: "𝅗𝅥", value: "2" },
     { symbol: "♩", value: "1" },
-    { symbol: "♪", value: "0.5" }
+    { symbol: "♪", value: "0.5" },
+    { symbol: "𝅘𝅥𝅯", value: "0.25" }
 ];
 
 const screens = {
@@ -809,12 +807,16 @@ function renderRhythmQuestion() {
         "";
 
     renderAnswerOptions(
-        ["0.5", "1", "2", "4"],
+        ["0.25", "0.5", "1"],
         currentQuestion.value
     );
 }
 
 function beatLabel(value) {
+    if (value === "0.25") {
+        return "¼ beat";
+    }
+
     if (value === "0.5") {
         return "½ beat";
     }
