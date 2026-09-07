@@ -272,9 +272,9 @@ courses.push(
         }))
     },
     {
-        title: "Natural Minor Scales",
-        description: "All 12 natural minor scales.",
-        summary: "Natural minor scales use: whole, half, whole, whole, half, whole, whole.",
+        title: "Minor Scales",
+        description: "All 12 minor scales.",
+        summary: "Minor scales use: whole, half, whole, whole, half, whole, whole.",
         takeaway: "Each natural minor shares a signature with a relative major key.",
         sections: minorScaleSpecs.map(([name, key]) => ({
             title: name,
@@ -303,11 +303,15 @@ const screens = {
     course: document.getElementById("course-screen"),
     practice: document.getElementById("practice-screen"),
     setup: document.getElementById("setup-screen"),
+    scaleSetup: document.getElementById("scale-setup-screen"),
     exercise: document.getElementById("exercise-screen")
 };
 
 let selectedCourseIndex = 0;
 let selectedClef = "treble";
+let selectedScaleGroup = "both";
+let selectedScaleClef = "treble";
+let scaleStep = 0;
 let activeExercise = "reading";
 let currentQuestion = null;
 let answerLocked = false;
@@ -566,6 +570,7 @@ function noteFromMidi(midi, clef) {
         note,
         octave,
         clef,
+        midi,
         vNote: `${note.toLowerCase()}${octave}`
     };
 }
@@ -663,7 +668,7 @@ function naturalKeyboardNotes(startMidi, endMidi) {
     return notes;
 }
 
-function renderKeyboard(startMidi, endMidi, onSelect) {
+function renderKeyboard(startMidi, endMidi, onSelect, labeler = item => item.note) {
     const whiteContainer =
         document.getElementById("white-keys-container");
 
@@ -684,7 +689,7 @@ function renderKeyboard(startMidi, endMidi, onSelect) {
         key.className = "key white";
         key.dataset.note = item.note;
         key.dataset.octave = item.octave;
-        key.textContent = item.note;
+        key.textContent = labeler(item);
 
         key.setAttribute(
             "aria-label",
@@ -750,7 +755,7 @@ function renderKeyboard(startMidi, endMidi, onSelect) {
             key.className = "key black";
             key.dataset.note = sharp.note;
             key.dataset.octave = sharp.octave;
-            key.textContent = sharp.note;
+            key.textContent = labeler(sharp);
 
             key.setAttribute(
                 "aria-label",
@@ -827,8 +832,12 @@ function renderQuestion() {
         renderReadingQuestion();
     }
 
-    if (activeExercise === "rhythm") {
+    if (activeExercise === "noteDuration" || activeExercise === "rests") {
         renderRhythmQuestion();
+    }
+
+    if (activeExercise === "scale") {
+        renderScaleQuestion();
     }
 }
 
@@ -885,39 +894,28 @@ function checkReadingAnswer(answer, key) {
 }
 
 function renderRhythmQuestion() {
-    currentQuestion =
-        rhythmQuestions[
-            Math.floor(
-                Math.random() *
-                rhythmQuestions.length
-            )
-        ];
+    const pool = rhythmQuestions.filter(question =>
+        activeExercise === "rests"
+            ? question.name.includes("rest")
+            : question.name.includes("note")
+    );
+
+    currentQuestion = pool[Math.floor(Math.random() * pool.length)];
 
     document.getElementById("exercise-label").textContent =
-        "RHYTHM";
-
+        activeExercise === "rests" ? "RESTS" : "NOTE VALUES";
     document.getElementById("exercise-title").textContent =
-        "What note is this?";
-
+        activeExercise === "rests" ? "What rest is this?" : "What note is this?";
     document.getElementById("exercise-instruction").textContent =
-        "Choose the correct note name.";
+        "Choose the correct musical name.";
 
-    document
-        .getElementById("rhythm-panel")
-        .classList.remove("hidden");
-
-    document
-        .getElementById("answer-options")
-        .classList.remove("hidden");
-
-    document.getElementById("rhythm-symbol").textContent =
-        currentQuestion.symbol;
-
-    document.getElementById("rhythm-name").textContent =
-        "";
+    document.getElementById("rhythm-panel").classList.remove("hidden");
+    document.getElementById("answer-options").classList.remove("hidden");
+    document.getElementById("rhythm-symbol").textContent = currentQuestion.symbol;
+    document.getElementById("rhythm-name").textContent = "";
 
     renderNoteNameOptions(
-        rhythmQuestions.map(question => question.name),
+        pool.map(question => question.name),
         currentQuestion.name
     );
 }
@@ -958,6 +956,102 @@ function renderNoteNameOptions(values, correctValue) {
         container.appendChild(button);
     });
 }
+
+const scalePitchClasses = {
+    "C": 0, "C-sharp": 1, "D-flat": 1, "D": 2,
+    "D-sharp": 3, "E-flat": 3, "E": 4, "F": 5,
+    "F-sharp": 6, "G-flat": 6, "G": 7,
+    "G-sharp": 8, "A-flat": 8, "A": 9,
+    "A-sharp": 10, "B-flat": 10, "B": 11
+};
+
+function scalePracticePool() {
+    const major = majorScaleSpecs.map(([name]) => ({ name, mode: "major" }));
+    const minor = minorScaleSpecs.map(([name]) => ({ name, mode: "minor" }));
+
+    if (selectedScaleGroup === "major") return major;
+    if (selectedScaleGroup === "minor") return minor;
+    return [...major, ...minor];
+}
+
+function buildScaleQuestion(scale) {
+    const tonicName = scale.name.replace(" major", "").replace(" minor", "");
+    const tonicClass = scalePitchClasses[tonicName];
+    const intervals = scale.mode === "major"
+        ? [0, 2, 4, 5, 7, 9, 11, 12]
+        : [0, 2, 3, 5, 7, 8, 10, 12];
+    const range = selectedScaleClef === "treble" ? [57, 84] : [36, 64];
+    let tonicMidi = range[0];
+
+    while (tonicMidi % 12 !== tonicClass) tonicMidi++;
+    if (tonicMidi + 12 > range[1]) tonicMidi -= 12;
+
+    return {
+        ...scale,
+        tonicName,
+        sequence: intervals.map(interval => tonicMidi + interval)
+    };
+}
+
+function scaleKeyboardLabel(midi, scaleName) {
+    const useFlats = scaleName.includes("flat") ||
+        ["F major", "D minor", "G minor", "C minor", "F minor"].includes(scaleName);
+    const sharpNames = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+    const flatNames = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
+    return (useFlats ? flatNames : sharpNames)[midi % 12];
+}
+
+function renderScaleQuestion() {
+    const pool = scalePracticePool();
+    const scale = pool[Math.floor(Math.random() * pool.length)];
+    currentQuestion = buildScaleQuestion(scale);
+    scaleStep = 0;
+    answerLocked = false;
+
+    document.getElementById("exercise-label").textContent = "SCALE PRACTICE";
+    document.getElementById("exercise-title").textContent =
+        "Play " + currentQuestion.name;
+    document.getElementById("exercise-instruction").textContent =
+        "Start on " + currentQuestion.tonicName + " and play one octave upward.";
+    document.getElementById("piano-container").classList.remove("hidden");
+
+    const range = selectedScaleClef === "treble" ? [57, 84] : [36, 64];
+    renderKeyboard(range[0], range[1], checkScaleAnswer, item =>
+        scaleKeyboardLabel(item.midi, currentQuestion.name)
+    );
+}
+
+function checkScaleAnswer(answer, key) {
+    if (answerLocked) return;
+
+    const expectedMidi = currentQuestion.sequence[scaleStep];
+
+    if (answer.midi !== expectedMidi) {
+        key.classList.add("incorrect");
+        document.getElementById("feedback").textContent =
+            "Next note: " + scaleKeyboardLabel(expectedMidi, currentQuestion.name);
+        document.getElementById("feedback").className = "feedback error";
+        setTimeout(() => key.classList.remove("incorrect"), 350);
+        return;
+    }
+
+    key.classList.add("correct");
+    scaleStep++;
+    document.getElementById("feedback").textContent = "Correct";
+    document.getElementById("feedback").className = "feedback success";
+
+    if (scaleStep === currentQuestion.sequence.length) {
+        answerLocked = true;
+        document.getElementById("feedback").textContent = "Scale complete";
+        const token = sessionToken;
+
+        setTimeout(() => {
+            if (token !== sessionToken) return;
+            renderQuestion();
+        }, 900);
+    }
+}
+
 
 function beatLabel(value) {
     if (value === "0.25") {
@@ -1068,6 +1162,8 @@ document
 
             if (type === "reading") {
                 showScreen("setup");
+            } else if (type === "scale") {
+                showScreen("scaleSetup");
             } else {
                 startExercise(type);
             }
@@ -1098,6 +1194,39 @@ document
                     );
                 });
         });
+    });
+
+
+document
+    .querySelectorAll("[data-scale-group]")
+    .forEach(button => {
+        button.addEventListener("click", () => {
+            selectedScaleGroup = button.dataset.scaleGroup;
+            document.querySelectorAll("[data-scale-group]").forEach(option => {
+                const selected = option === button;
+                option.classList.toggle("selected", selected);
+                option.setAttribute("aria-checked", String(selected));
+            });
+        });
+    });
+
+document
+    .querySelectorAll("[data-scale-clef]")
+    .forEach(button => {
+        button.addEventListener("click", () => {
+            selectedScaleClef = button.dataset.scaleClef;
+            document.querySelectorAll("[data-scale-clef]").forEach(option => {
+                const selected = option === button;
+                option.classList.toggle("selected", selected);
+                option.setAttribute("aria-checked", String(selected));
+            });
+        });
+    });
+
+document
+    .getElementById("start-scale-practice")
+    .addEventListener("click", () => {
+        startExercise("scale");
     });
 
 document
