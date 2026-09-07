@@ -162,38 +162,48 @@ const courses = [
     },
     {
         title: "Key Signatures",
-        description: "Sharps or flats used throughout a piece.",
-        summary: "The symbols after the clef tell you which notes are usually altered.",
-        takeaway: "Check the key signature before you begin playing.",
+        description: "The sharps or flats used throughout a piece.",
+        summary: "A key signature appears after the clef and shows which notes are normally sharp or flat.",
+        takeaway: "Read the clef, then the key signature, before reading the notes.",
         sections: [
             {
-                title: "Read it first",
-                text: "A key signature appears just after the clef.",
-                visual: {
-                    type: "key",
-                    clef: "treble",
-                    key: "G",
-                    caption: "G major — one sharp"
-                }
+                title: "C major",
+                text: "C major has no sharps or flats.",
+                visual: { type: "key", clef: "treble", key: "C", caption: "C major — no sharps or flats" }
             },
             {
-                title: "Order of sharps",
-                text: "F, C, G, D, A, E, B.",
-                chips: [["F  C  G  D  A  E  B", "Sharps"]]
+                title: "G major",
+                text: "G major has one sharp: F♯. Every F is normally played as F♯.",
+                visual: { type: "key", clef: "treble", key: "G", caption: "G major — F♯" }
             },
             {
-                title: "Order of flats",
-                text: "B, E, A, D, G, C, F.",
-                chips: [["B  E  A  D  G  C  F", "Flats"]]
+                title: "D major",
+                text: "D major has two sharps: F♯ and C♯.",
+                visual: { type: "key", clef: "treble", key: "D", caption: "D major — F♯ and C♯" }
+            },
+            {
+                title: "F major",
+                text: "F major has one flat: B♭. Every B is normally played as B♭.",
+                visual: { type: "key", clef: "treble", key: "F", caption: "F major — B♭" }
+            },
+            {
+                title: "B-flat major",
+                text: "B-flat major has two flats: B♭ and E♭.",
+                visual: { type: "key", clef: "treble", key: "Bb", caption: "B♭ major — B♭ and E♭" }
+            },
+            {
+                title: "Remember the order",
+                text: "Sharps and flats always appear in the same order.",
+                chips: [["F  C  G  D  A  E  B", "Order of sharps"], ["B  E  A  D  G  C  F", "Order of flats"]]
             }
         ]
     }
 ];
 
 const rhythmQuestions = [
-    { symbol: "♩", value: "1" },
-    { symbol: "♪", value: "0.5" },
-    { symbol: "𝅘𝅥𝅯", value: "0.25" }
+    { symbol: "♩", name: "Quarter note" },
+    { symbol: "♪", name: "Eighth note" },
+    { symbol: "𝅘𝅥𝅯", name: "Sixteenth note" }
 ];
 
 const screens = {
@@ -788,10 +798,10 @@ function renderRhythmQuestion() {
         "RHYTHM";
 
     document.getElementById("exercise-title").textContent =
-        "How many beats?";
+        "What note is this?";
 
     document.getElementById("exercise-instruction").textContent =
-        "Choose one answer.";
+        "Choose the correct note name.";
 
     document
         .getElementById("rhythm-panel")
@@ -807,10 +817,47 @@ function renderRhythmQuestion() {
     document.getElementById("rhythm-name").textContent =
         "";
 
-    renderAnswerOptions(
-        ["0.25", "0.5", "1"],
-        currentQuestion.value
+    renderNoteNameOptions(
+        rhythmQuestions.map(question => question.name),
+        currentQuestion.name
     );
+}
+
+function renderNoteNameOptions(values, correctValue) {
+    const container =
+        document.getElementById("answer-options");
+
+    container.innerHTML = "";
+
+    values.forEach(value => {
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+        button.className = "answer-option";
+        button.textContent = value;
+
+        button.addEventListener("click", () => {
+            if (answerLocked) {
+                return;
+            }
+
+            const correct =
+                value === correctValue;
+
+            button.classList.add(
+                correct ? "correct" : "incorrect"
+            );
+
+            finishAnswer(
+                correct,
+                null,
+                correctValue
+            );
+        });
+
+        container.appendChild(button);
+    });
 }
 
 function beatLabel(value) {
