@@ -498,16 +498,17 @@ function renderCourseVisuals(course) {
                     width: width - 30
                 });
 
-            const notes =
-                visual.type === "notes"
-                    ? visual.notes
-                        .map(note => `${note}/q`)
-                        .join(", ")
-                    : "c5/w";
+            const hasNotes = Array.isArray(visual.notes);
+
+            const notes = hasNotes
+                ? visual.notes
+                    .map(note => `${note}/q`)
+                    .join(", ")
+                : "c5/w";
 
             const voice = score.voice(
                 score.notes(notes, { clef: visual.clef }),
-                { time: visual.type === "notes" ? `${visual.notes.length}/4` : "4/4" }
+                { time: hasNotes ? `${visual.notes.length}/4` : "4/4" }
             );
 
             const stave = system
