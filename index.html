@@ -78,6 +78,7 @@
             <div class="practice-grid">
                 <button class="practice-card" type="button" data-exercise="reading"><span class="practice-type">NOTES</span><strong>Note Reading</strong><small>Read the staff and choose the piano key.</small><span class="card-link">Start →</span></button>
                 <button class="practice-card" type="button" data-exercise="rhythm"><span class="practice-type">RHYTHM</span><strong>Note Values</strong><small>Learn how many beats each note lasts.</small><span class="card-link">Start →</span></button>
+                <button class="practice-card" type="button" data-exercise="scale"><span class="practice-type">SCALES</span><strong>Scale Practice</strong><small>Play major and minor scales on the keyboard.</small><span class="card-link">Start →</span></button>
             </div>
         </section>
 
@@ -93,6 +94,30 @@
                     <button class="option-button" type="button" data-clef="both" role="radio" aria-checked="false"><span><strong>Both clefs</strong><small>Mixed practice</small></span></button>
                 </div>
                 <button id="start-reading" class="button button-primary button-full" type="button">Start practice</button>
+            </div>
+        </section>
+
+        <section id="scale-setup-screen" class="screen compact-screen hidden">
+            <button class="text-button back-control" type="button" data-go="practice">← Practice</button>
+            <div class="setup-panel">
+                <p class="section-label">SCALE PRACTICE</p>
+                <h1>Choose your practice</h1>
+                <p>Play each scale upward through one octave.</p>
+
+                <h2>Scale type</h2>
+                <div class="option-list" role="radiogroup" aria-label="Scale type">
+                    <button class="option-button selected" type="button" data-scale-group="both" role="radio" aria-checked="true"><span><strong>Major and minor</strong><small>All 24 scales</small></span></button>
+                    <button class="option-button" type="button" data-scale-group="major" role="radio" aria-checked="false"><span><strong>Major scales</strong><small>12 scales</small></span></button>
+                    <button class="option-button" type="button" data-scale-group="minor" role="radio" aria-checked="false"><span><strong>Natural minor scales</strong><small>12 scales</small></span></button>
+                </div>
+
+                <h2>Keyboard range</h2>
+                <div class="option-list" role="radiogroup" aria-label="Scale keyboard range">
+                    <button class="option-button selected" type="button" data-scale-clef="treble" role="radio" aria-checked="true"><span><strong>Treble range</strong><small>A3–C6</small></span></button>
+                    <button class="option-button" type="button" data-scale-clef="bass" role="radio" aria-checked="false"><span><strong>Bass range</strong><small>C2–E4</small></span></button>
+                </div>
+
+                <button id="start-scale-practice" class="button button-primary button-full" type="button">Start scale practice</button>
             </div>
         </section>
 
