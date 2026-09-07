@@ -1,703 +1,992 @@
-const lessonsData = {
-    dynamics: {
-        title: "Dynamics",
-        content: `
-            <p>Dynamics refer to the volume of a sound or note, telling the performer how loudly or softly to play.</p>
-            <div class="visual-guide-box">
-                <div class="visual-item"><strong>ppp</strong> <span class="visual-desc">Extremely soft</span></div>
-                <div class="visual-item"><strong>pp</strong> <span class="visual-desc">Very soft</span></div>
-                <div class="visual-item"><strong>p</strong> <span class="visual-desc">Soft</span></div>
-                <div class="visual-item"><strong>mp</strong> <span class="visual-desc">Moderately soft</span></div>
-                <div class="visual-item"><strong>mf</strong> <span class="visual-desc">Moderately loud</span></div>
-                <div class="visual-item"><strong>f</strong> <span class="visual-desc">Loud</span></div>
-                <div class="visual-item"><strong>ff</strong> <span class="visual-desc">Very loud</span></div>
-                <div class="visual-item"><strong>fff</strong> <span class="visual-desc">Extremely loud</span></div>
-            </div>
-            <p style="margin-top: 15px;">Gradual changes:</p>
-            <div class="visual-guide-box">
-                <div class="visual-item"><strong>&lt;</strong> <span class="visual-desc">Crescendo (Gradually getting louder)</span></div>
-                <div class="visual-item"><strong>&gt;</strong> <span class="visual-desc">Decrescendo (Gradually getting softer)</span></div>
-            </div>
-        `
+const courses = [
+    {
+        title: "Music Basics",
+        description: "Staff, pitch and measures.",
+        summary: "Start here if written music is completely new to you.",
+        takeaway: "Higher notes sit higher. Bar lines divide music into measures.",
+        sections: [
+            {
+                title: "The staff",
+                text: "Music is written on five lines and four spaces.",
+                visual: {
+                    type: "notes",
+                    clef: "treble",
+                    notes: ["c4", "c5"],
+                    caption: "Low C → High C"
+                }
+            },
+            {
+                title: "Clefs",
+                text: "Treble clef is typically used for higher notes, while bass clef is used for lower notes.",
+                chips: [
+                    ["𝄞", "Treble"],
+                    ["𝄢", "Bass"]
+                ]
+            },
+            {
+                title: "Measures",
+                text: "Bar lines divide music into small sections called measures.",
+                example: "bar line  |  measure  |  bar line"
+            }
+        ]
     },
-    length: {
-        title: "Length of the Notes",
-        content: `
-            <p>Note values determine how long a note is played relative to other notes. Here is what each note and rest looks like:</p>
-            <div class="visual-guide-box">
-                <div class="visual-item">
-                    <span class="note-symbol">𝅝</span>
-                    <div><strong>Whole Note</strong><br><span class="visual-desc">Lasts for 4 beats</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝄻</span>
-                    <div><strong>Whole Rest</strong><br><span class="visual-desc">4 beats of silence</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝅗𝅥</span>
-                    <div><strong>Half Note</strong><br><span class="visual-desc">Lasts for 2 beats</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝄼</span>
-                    <div><strong>Half Rest</strong><br><span class="visual-desc">2 beats of silence</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">♩</span>
-                    <div><strong>Quarter Note</strong><br><span class="visual-desc">Lasts for 1 beat</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝄽</span>
-                    <div><strong>Quarter Rest</strong><br><span class="visual-desc">1 beat of silence</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">♪</span>
-                    <div><strong>Eighth Note</strong><br><span class="visual-desc">Lasts for 1/2 beat</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝄾</span>
-                    <div><strong>Eighth Rest</strong><br><span class="visual-desc">1/2 beat of silence</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝉆</span>
-                    <div><strong>Sixteenth Note</strong><br><span class="visual-desc">Lasts for 1/4 beat</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝄿</span>
-                    <div><strong>Sixteenth Rest</strong><br><span class="visual-desc">1/4 beat of silence</span></div>
-                </div>
-            </div>
-        `
+    {
+        title: "Treble Clef",
+        description: "Notes often played by the right hand.",
+        summary: "Use G as your first landmark. Then count up or down.",
+        takeaway: "Find G first. Nearby notes are only a step away.",
+        sections: [
+            {
+                title: "The G landmark",
+                text: "The clef curls around the second line. That line is G.",
+                visual: {
+                    type: "notes",
+                    clef: "treble",
+                    notes: ["g4"],
+                    caption: "G4 — second line"
+                }
+            },
+            {
+                title: "Lines",
+                text: "From bottom to top: E, G, B, D, F.",
+                chips: [["E  G  B  D  F", "Treble lines"]]
+            },
+            {
+                title: "Spaces",
+                text: "From bottom to top: F, A, C, E.",
+                chips: [["F  A  C  E", "Treble spaces"]]
+            },
+            {
+                title: "Middle C",
+                text: "Middle C sits on a short line below the staff.",
+                visual: {
+                    type: "notes",
+                    clef: "treble",
+                    notes: ["c4"],
+                    caption: "C4 — middle C"
+                }
+            }
+        ]
     },
-    signs: {
-        title: "Signs of Music",
-        content: `
-            <p>Musical signs and symbols provide instructions for reading and interpreting a score:</p>
-            <div class="visual-guide-box">
-                <div class="visual-item">
-                    <span class="note-symbol">𝄞</span>
-                    <div><strong>Treble Clef</strong><br><span class="visual-desc">Defines higher pitch ranges</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝄢</span>
-                    <div><strong>Bass Clef</strong><br><span class="visual-desc">Defines lower pitch ranges</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">♯</span>
-                    <div><strong>Sharp</strong><br><span class="visual-desc">Raises a pitch by a half step</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">♭</span>
-                    <div><strong>Flat</strong><br><span class="visual-desc">Lowers a pitch by a half step</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">♮</span>
-                    <div><strong>Natural</strong><br><span class="visual-desc">Cancels a sharp or flat</span></div>
-                </div>
-                <div class="visual-item">
-                    <span class="note-symbol">𝄴</span>
-                    <div><strong>Time Signature</strong><br><span class="visual-desc">Indicates meter (e.g., 4/4 beats)</span></div>
-                </div>
-            </div>
-        `
+    {
+        title: "Bass Clef",
+        description: "Notes often played by the left hand.",
+        summary: "Use F as your first landmark. The two dots point to it.",
+        takeaway: "Find F first. Use it to read the notes around it.",
+        sections: [
+            {
+                title: "The F landmark",
+                text: "The two dots surround the fourth line. That line is F.",
+                visual: {
+                    type: "notes",
+                    clef: "bass",
+                    notes: ["f3"],
+                    caption: "F3 — fourth line"
+                }
+            },
+            {
+                title: "Lines",
+                text: "From bottom to top: G, B, D, F, A.",
+                chips: [["G  B  D  F  A", "Bass lines"]]
+            },
+            {
+                title: "Spaces",
+                text: "From bottom to top: A, C, E, G.",
+                chips: [["A  C  E  G", "Bass spaces"]]
+            },
+            {
+                title: "Middle C",
+                text: "Middle C sits on a short line above the bass staff.",
+                visual: {
+                    type: "notes",
+                    clef: "bass",
+                    notes: ["c4"],
+                    caption: "C4 — middle C"
+                }
+            }
+        ]
+    },
+    {
+        title: "Rhythm",
+        description: "Beat, note values and rests.",
+        summary: "Rhythm tells you when to play and how long to hold a note.",
+        takeaway: "Count a steady beat. Give every note its full value.",
+        sections: [
+            {
+                title: "The beat",
+                text: "The beat is the steady pulse of the music.",
+                example: "1   2   3   4"
+            },
+            {
+                title: "Note values",
+                text: "These are the four values to learn first.",
+                chips: [
+                    ["𝅝", "4 beats"],
+                    ["𝅗𝅥", "2 beats"],
+                    ["♩", "1 beat"],
+                    ["♪", "½ beat"]
+                ]
+            },
+            {
+                title: "Rests",
+                text: "A rest is silence that still takes time.",
+                example: "Keep counting during every rest."
+            }
+        ]
+    },
+    {
+        title: "Accidentals",
+        description: "Sharps, flats and naturals.",
+        summary: "Accidentals raise, lower or reset a note.",
+        takeaway: "Sharp raises. Flat lowers. Natural cancels.",
+        sections: [
+            {
+                title: "Sharp",
+                text: "A sharp raises a note by one piano key.",
+                chips: [["♯", "Raise"]]
+            },
+            {
+                title: "Flat",
+                text: "A flat lowers a note by one piano key.",
+                chips: [["♭", "Lower"]]
+            },
+            {
+                title: "Natural",
+                text: "A natural cancels a sharp or flat.",
+                chips: [["♮", "Cancel"]]
+            }
+        ]
+    },
+    {
+        title: "Key Signatures",
+        description: "Sharps or flats used throughout a piece.",
+        summary: "The symbols after the clef tell you which notes are usually altered.",
+        takeaway: "Check the key signature before you begin playing.",
+        sections: [
+            {
+                title: "Read it first",
+                text: "A key signature appears just after the clef.",
+                visual: {
+                    type: "key",
+                    clef: "treble",
+                    key: "G",
+                    caption: "G major — one sharp"
+                }
+            },
+            {
+                title: "Order of sharps",
+                text: "F, C, G, D, A, E, B.",
+                chips: [["F  C  G  D  A  E  B", "Sharps"]]
+            },
+            {
+                title: "Order of flats",
+                text: "B, E, A, D, G, C, F.",
+                chips: [["B  E  A  D  G  C  F", "Flats"]]
+            }
+        ]
     }
+];
+
+const rhythmQuestions = [
+    { symbol: "𝅝", value: "4" },
+    { symbol: "𝅗𝅥", value: "2" },
+    { symbol: "♩", value: "1" },
+    { symbol: "♪", value: "0.5" }
+];
+
+const screens = {
+    home: document.getElementById("home-screen"),
+    learn: document.getElementById("learn-screen"),
+    course: document.getElementById("course-screen"),
+    practice: document.getElementById("practice-screen"),
+    setup: document.getElementById("setup-screen"),
+    exercise: document.getElementById("exercise-screen")
 };
 
-const trebleNotes = [
-    { note: "C", vNote: "c4", clef: "treble", octave: 4 },
-    { note: "C#", vNote: "c#4", clef: "treble", octave: 4 },
-    { note: "D", vNote: "d4", clef: "treble", octave: 4 },
-    { note: "D#", vNote: "d#4", clef: "treble", octave: 4 },
-    { note: "E", vNote: "e4", clef: "treble", octave: 4 },
-    { note: "F", vNote: "f4", clef: "treble", octave: 4 },
-    { note: "F#", vNote: "f#4", clef: "treble", octave: 4 },
-    { note: "G", vNote: "g4", clef: "treble", octave: 4 },
-    { note: "G#", vNote: "g#4", clef: "treble", octave: 4 },
-    { note: "A", vNote: "a4", clef: "treble", octave: 4 },
-    { note: "A#", vNote: "a#4", clef: "treble", octave: 4 },
-    { note: "B", vNote: "b4", clef: "treble", octave: 4 },
-    { note: "C", vNote: "c5", clef: "treble", octave: 5 },
-    { note: "C#", vNote: "c#5", clef: "treble", octave: 5 },
-    { note: "D", vNote: "d5", clef: "treble", octave: 5 },
-    { note: "D#", vNote: "d#5", clef: "treble", octave: 5 },
-    { note: "E", vNote: "e5", clef: "treble", octave: 5 },
-    { note: "F", vNote: "f5", clef: "treble", octave: 5 },
-    { note: "F#", vNote: "f#5", clef: "treble", octave: 5 },
-    { note: "G", vNote: "g5", clef: "treble", octave: 5 },
-    { note: "G#", vNote: "g#5", clef: "treble", octave: 5 },
-    { note: "A", vNote: "a5", clef: "treble", octave: 5 },
-    { note: "A#", vNote: "a#5", clef: "treble", octave: 5 },
-    { note: "B", vNote: "b5", clef: "treble", octave: 5 },
-    { note: "C", vNote: "c6", clef: "treble", octave: 6 }
-];
+let selectedCourseIndex = 0;
+let selectedClef = "treble";
+let activeExercise = "reading";
+let answeredQuestions = 0;
+let currentQuestion = null;
+let answerLocked = false;
+let sessionToken = 0;
 
-const bassNotes = [
-    { note: "C", vNote: "c2", clef: "bass", octave: 2 },
-    { note: "C#", vNote: "c#2", clef: "bass", octave: 2 },
-    { note: "D", vNote: "d2", clef: "bass", octave: 2 },
-    { note: "D#", vNote: "d#2", clef: "bass", octave: 2 },
-    { note: "E", vNote: "e2", clef: "bass", octave: 2 },
-    { note: "F", vNote: "f2", clef: "bass", octave: 2 },
-    { note: "F#", vNote: "f#2", clef: "bass", octave: 2 },
-    { note: "G", vNote: "g2", clef: "bass", octave: 2 },
-    { note: "G#", vNote: "g#2", clef: "bass", octave: 2 },
-    { note: "A", vNote: "a2", clef: "bass", octave: 2 },
-    { note: "A#", vNote: "a#2", clef: "bass", octave: 2 },
-    { note: "B", vNote: "b2", clef: "bass", octave: 2 },
-    { note: "C", vNote: "c3", clef: "bass", octave: 3 },
-    { note: "C#", vNote: "c#3", clef: "bass", octave: 3 },
-    { note: "D", vNote: "d3", clef: "bass", octave: 3 },
-    { note: "D#", vNote: "d#3", clef: "bass", octave: 3 },
-    { note: "E", vNote: "e3", clef: "bass", octave: 3 },
-    { note: "F", vNote: "f3", clef: "bass", octave: 3 },
-    { note: "F#", vNote: "f#3", clef: "bass", octave: 3 },
-    { note: "G", vNote: "g3", clef: "bass", octave: 3 },
-    { note: "G#", vNote: "g#3", clef: "bass", octave: 3 },
-    { note: "A", vNote: "a3", clef: "bass", octave: 3 },
-    { note: "A#", vNote: "a#3", clef: "bass", octave: 3 },
-    { note: "B", vNote: "b3", clef: "bass", octave: 3 },
-    { note: "C", vNote: "c4", clef: "bass", octave: 4 }
-];
+function showScreen(name) {
+    sessionToken++;
 
-const fullNotePool = [...trebleNotes, ...bassNotes];
+    Object.values(screens).forEach(screen => {
+        screen.classList.add("hidden");
+    });
 
-const allScales = [
-    { name: "C Major Scale", type: "major", clef: "treble", notes: [{note:"C", vNote:"c4", octave:4}, {note:"D", vNote:"d4", octave:4}, {note:"E", vNote:"e4", octave:4}, {note:"F", vNote:"f4", octave:4}, {note:"G", vNote:"g4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C", vNote:"c5", octave:5}] },
-    { name: "G Major Scale", type: "major", clef: "treble", notes: [{note:"G", vNote:"g4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"E", vNote:"e5", octave:5}, {note:"F#", vNote:"f#5", octave:5}, {note:"G", vNote:"g5", octave:5}] },
-    { name: "D Major Scale", type: "major", clef: "treble", notes: [{note:"D", vNote:"d4", octave:4}, {note:"E", vNote:"e4", octave:4}, {note:"F#", vNote:"f#4", octave:4}, {note:"G", vNote:"g4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D", vNote:"d5", octave:5}] },
-    { name: "A Major Scale", type: "major", clef: "treble", notes: [{note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"E", vNote:"e5", octave:5}, {note:"F#", vNote:"f#5", octave:5}, {note:"G#", vNote:"g#5", octave:5}, {note:"A", vNote:"a5", octave:5}] },
-    { name: "E Major Scale", type: "major", clef: "treble", notes: [{note:"E", vNote:"e4", octave:4}, {note:"F#", vNote:"f#4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"E", vNote:"e5", octave:5}] },
-    { name: "B Major Scale", type: "major", clef: "treble", notes: [{note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"E", vNote:"e5", octave:5}, {note:"F#", vNote:"f#5", octave:5}, {note:"G#", vNote:"g#5", octave:5}, {note:"A#", vNote:"a#5", octave:5}, {note:"B", vNote:"b5", octave:5}] },
-    { name: "F# Major Scale", type: "major", clef: "treble", notes: [{note:"F#", vNote:"f#4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"F", vNote:"f5", octave:5}, {note:"F#", vNote:"f#5", octave:5}] },
-    { name: "F Major Scale", type: "major", clef: "treble", notes: [{note:"F", vNote:"f4", octave:4}, {note:"G", vNote:"g4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"E", vNote:"e5", octave:5}, {note:"F", vNote:"f5", octave:5}] },
-    { name: "Bb Major Scale", type: "major", clef: "treble", notes: [{note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"F", vNote:"f5", octave:5}, {note:"G", vNote:"g5", octave:5}, {note:"A", vNote:"a5", octave:5}, {note:"A#", vNote:"a#5", octave:5}] },
-    { name: "Eb Major Scale", type: "major", clef: "treble", notes: [{note:"D#", vNote:"d#4", octave:4}, {note:"F", vNote:"f4", octave:4}, {note:"G", vNote:"g4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"D#", vNote:"d#5", octave:5}] },
-    { name: "Ab Major Scale", type: "major", clef: "treble", notes: [{note:"G#", vNote:"g#4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"C#", vNote:"c#5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"F", vNote:"f5", octave:5}, {note:"G", vNote:"g5", octave:5}, {note:"G#", vNote:"g#5", octave:5}] },
-    { name: "Db Major Scale", type: "major", clef: "treble", notes: [{note:"C#", vNote:"c#4", octave:4}, {note:"D#", vNote:"d#4", octave:4}, {note:"F", vNote:"f4", octave:4}, {note:"F#", vNote:"f#4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"C#", vNote:"c#5", octave:5}] },
+    screens[name].classList.remove("hidden");
 
-    { name: "A Minor Scale", type: "minor", clef: "treble", notes: [{note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"E", vNote:"e5", octave:5}, {note:"F", vNote:"f5", octave:5}, {note:"G", vNote:"g5", octave:5}, {note:"A", vNote:"a5", octave:5}] },
-    { name: "E Minor Scale", type: "minor", clef: "treble", notes: [{note:"E", vNote:"e4", octave:4}, {note:"F#", vNote:"f#4", octave:4}, {note:"G", vNote:"g4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"E", vNote:"e5", octave:5}] },
-    { name: "B Minor Scale", type: "minor", clef: "treble", notes: [{note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"E", vNote:"e5", octave:5}, {note:"F#", vNote:"f#5", octave:5}, {note:"G", vNote:"g5", octave:5}, {note:"A", vNote:"a5", octave:5}, {note:"B", vNote:"b5", octave:5}] },
-    { name: "F# Minor Scale", type: "minor", clef: "treble", notes: [{note:"F#", vNote:"f#4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"E", vNote:"e5", octave:5}, {note:"F#", vNote:"f#5", octave:5}] },
-    { name: "C# Minor Scale", type: "minor", clef: "treble", notes: [{note:"C#", vNote:"c#4", octave:4}, {note:"D#", vNote:"d#4", octave:4}, {note:"E", vNote:"e4", octave:4}, {note:"F#", vNote:"f#4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}] },
-    { name: "G# Minor Scale", type: "minor", clef: "treble", notes: [{note:"G#", vNote:"g#4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"E", vNote:"e5", octave:5}, {note:"F#", vNote:"f#5", octave:5}, {note:"G#", vNote:"g#5", octave:5}] },
-    { name: "D# Minor Scale", type: "minor", clef: "treble", notes: [{note:"D#", vNote:"d#4", octave:4}, {note:"F", vNote:"f4", octave:4}, {note:"F#", vNote:"f#4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"B", vNote:"b4", octave:4}, {note:"C#", vNote:"c#5", octave:5}, {note:"D#", vNote:"d#5", octave:5}] },
-    { name: "D Minor Scale", type: "minor", clef: "treble", notes: [{note:"D", vNote:"d4", octave:4}, {note:"E", vNote:"e4", octave:4}, {note:"F", vNote:"f4", octave:4}, {note:"G", vNote:"g4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"D", vNote:"d5", octave:5}] },
-    { name: "G Minor Scale", type: "minor", clef: "treble", notes: [{note:"G", vNote:"g4", octave:4}, {note:"A", vNote:"a4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"D", vNote:"d5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"F", vNote:"f5", octave:5}, {note:"G", vNote:"g5", octave:5}] },
-    { name: "C Minor Scale", type: "minor", clef: "treble", notes: [{note:"C", vNote:"c4", octave:4}, {note:"D", vNote:"d4", octave:4}, {note:"D#", vNote:"d#4", octave:4}, {note:"F", vNote:"f4", octave:4}, {note:"G", vNote:"g4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}] },
-    { name: "F Minor Scale", type: "minor", clef: "treble", notes: [{note:"F", vNote:"f4", octave:4}, {note:"G", vNote:"g4", octave:4}, {note:"G#", vNote:"g#4", octave:4}, {note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"C#", vNote:"c#5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"F", vNote:"f5", octave:5}] },
-    { name: "Bb Minor Scale", type: "minor", clef: "treble", notes: [{note:"A#", vNote:"a#4", octave:4}, {note:"C", vNote:"c5", octave:5}, {note:"C#", vNote:"c#5", octave:5}, {note:"D#", vNote:"d#5", octave:5}, {note:"F", vNote:"f5", octave:5}, {note:"F#", vNote:"f#5", octave:5}, {note:"G#", vNote:"g#5", octave:5}, {note:"A#", vNote:"a#5", octave:5}] }
-];
+    document.querySelectorAll(".main-nav button").forEach(button => {
+        const section = button.dataset.go;
 
-let activeNotePool = [];
-let currentQuestion = {};
-let currentScale = null;
-let scaleIndex = 0;
-let scaleStage = 1; 
-let score = 0;
-let streak = 0;
-let timeLeft = 60;
-let timerInterval = null;
-let isPlaying = false;
-let selectedGameMode = "timeAttack";
-let selectedClefMode = "treble";
-let selectedScaleName = "random";
+        const active =
+            section === name ||
+            (name === "course" && section === "learn") ||
+            (["setup", "exercise"].includes(name) && section === "practice");
 
-function renderKeyboard(clefMode) {
-    const whiteContainer = document.getElementById("white-keys-container");
-    const blackContainer = document.getElementById("black-keys-container");
+        button.classList.toggle("active", active);
+    });
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function renderCourseGrid() {
+    const grid = document.getElementById("course-grid");
+    grid.innerHTML = "";
+
+    courses.forEach((course, index) => {
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className =
+            `course-card${index === 0 ? " recommended" : ""}`;
+
+        button.innerHTML = `
+            <span class="course-index">
+                ${String(index + 1).padStart(2, "0")}
+            </span>
+
+            <span>
+                <strong>${course.title}</strong>
+                <small>${course.description}</small>
+            </span>
+
+            <span class="course-status">
+                ${index === 0 ? "Start here" : "Open"} →
+            </span>
+        `;
+
+        button.addEventListener("click", () => {
+            openCourse(index);
+        });
+
+        grid.appendChild(button);
+    });
+}
+
+function openCourse(index) {
+    selectedCourseIndex = index;
+
+    const course = courses[index];
+
+    document.getElementById("course-kicker").textContent =
+        `COURSE ${String(index + 1).padStart(2, "0")}`;
+
+    document.getElementById("course-title").textContent =
+        course.title;
+
+    document.getElementById("course-summary").textContent =
+        course.summary;
+
+    document.getElementById("course-takeaway").textContent =
+        course.takeaway;
+
+    document.getElementById("course-body").innerHTML =
+        course.sections.map((section, sectionIndex) => `
+            <section class="lesson-section">
+                <div class="lesson-section-number">
+                    ${String(sectionIndex + 1).padStart(2, "0")}
+                </div>
+
+                <div>
+                    <h2>${section.title}</h2>
+
+                    <p>${section.text}</p>
+
+                    ${
+                        section.visual
+                            ? `
+                                <div
+                                    class="lesson-visual"
+                                    data-visual-index="${sectionIndex}"
+                                >
+                                    <div class="lesson-staff"></div>
+                                    <span>${section.visual.caption}</span>
+                                </div>
+                            `
+                            : ""
+                    }
+
+                    ${
+                        section.example
+                            ? `
+                                <div class="theory-example">
+                                    ${section.example}
+                                </div>
+                            `
+                            : ""
+                    }
+
+                    ${
+                        section.chips
+                            ? `
+                                <div class="symbol-line">
+                                    ${section.chips.map(chip => `
+                                        <div class="symbol-chip">
+                                            <strong>${chip[0]}</strong>
+                                            <small>${chip[1]}</small>
+                                        </div>
+                                    `).join("")}
+                                </div>
+                            `
+                            : ""
+                    }
+                </div>
+            </section>
+        `).join("");
+
+    const previous = document.getElementById("previous-course");
+    const next = document.getElementById("next-course");
+
+    previous.style.visibility =
+        index === 0 ? "hidden" : "visible";
+
+    next.textContent =
+        index === courses.length - 1
+            ? "All courses"
+            : "Next course";
+
+    showScreen("course");
+
+    requestAnimationFrame(() => {
+        renderCourseVisuals(course);
+    });
+}
+
+function renderCourseVisuals(course) {
+    document
+        .querySelectorAll("[data-visual-index]")
+        .forEach(wrapper => {
+            const visualIndex =
+                Number(wrapper.dataset.visualIndex);
+
+            const section =
+                course.sections[visualIndex];
+
+            const visual =
+                section.visual;
+
+            const target =
+                wrapper.querySelector(".lesson-staff");
+
+            target.innerHTML = "";
+
+            target.id =
+                `course-visual-${selectedCourseIndex}-${visualIndex}`;
+
+            const width = Math.max(
+                220,
+                Math.min(300, target.clientWidth || 300)
+            );
+
+            const factory = new VexFlow.Factory({
+                renderer: {
+                    elementId: target.id,
+                    width: width,
+                    height: 145
+                }
+            });
+
+            const score =
+                factory.EasyScore();
+
+            const system =
+                factory.System({
+                    x: 10,
+                    y: 10,
+                    width: width - 30
+                });
+
+            const notes =
+                visual.type === "notes"
+                    ? visual.notes
+                        .map(note => `${note}/q`)
+                        .join(", ")
+                    : "c5/w";
+
+            const stave = system
+                .addStave({
+                    voices: [
+                        score.voice(
+                            score.notes(notes, {
+                                clef: visual.clef
+                            })
+                        )
+                    ]
+                })
+                .addClef(visual.clef);
+
+            if (visual.type === "key") {
+                stave.addKeySignature(visual.key);
+            }
+
+            factory.draw();
+        });
+}
+
+function noteFromMidi(midi, clef) {
+    const names = [
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+    ];
+
+    const note = names[midi % 12];
+    const octave = Math.floor(midi / 12) - 1;
+
+    return {
+        note,
+        octave,
+        clef,
+        vNote: `${note.toLowerCase()}${octave}`
+    };
+}
+
+function makeNotePool(startMidi, endMidi, clef) {
+    const pool = [];
+
+    for (let midi = startMidi; midi <= endMidi; midi++) {
+        pool.push(noteFromMidi(midi, clef));
+    }
+
+    return pool;
+}
+
+const trebleNotes =
+    makeNotePool(57, 84, "treble");
+
+const bassNotes =
+    makeNotePool(36, 64, "bass");
+
+function getReadingPool() {
+    if (selectedClef === "treble") {
+        return trebleNotes;
+    }
+
+    if (selectedClef === "bass") {
+        return bassNotes;
+    }
+
+    return [
+        ...trebleNotes,
+        ...bassNotes
+    ];
+}
+
+function drawStaff(question) {
+    const container =
+        document.getElementById("staff-container");
+
+    container.innerHTML = "";
+
+    const width = Math.max(
+        220,
+        Math.min(300, container.clientWidth || 300)
+    );
+
+    const factory = new VexFlow.Factory({
+        renderer: {
+            elementId: container.id,
+            width: width,
+            height: 165
+        }
+    });
+
+    const score =
+        factory.EasyScore();
+
+    const system =
+        factory.System({
+            x: 10,
+            y: 15,
+            width: width - 30
+        });
+
+    system
+        .addStave({
+            voices: [
+                score.voice(
+                    score.notes(
+                        `${question.vNote}/w`,
+                        {
+                            clef: question.clef
+                        }
+                    )
+                )
+            ]
+        })
+        .addClef(question.clef);
+
+    factory.draw();
+}
+
+function naturalKeyboardNotes(startMidi, endMidi) {
+    const notes = [];
+
+    for (let midi = startMidi; midi <= endMidi; midi++) {
+        const item =
+            noteFromMidi(midi, "treble");
+
+        if (!item.note.includes("#")) {
+            notes.push(item);
+        }
+    }
+
+    return notes;
+}
+
+function renderKeyboard(startMidi, endMidi, onSelect) {
+    const whiteContainer =
+        document.getElementById("white-keys-container");
+
+    const blackContainer =
+        document.getElementById("black-keys-container");
+
     whiteContainer.innerHTML = "";
     blackContainer.innerHTML = "";
 
-    let octaves = clefMode === "bass" ? [2, 3] : [4, 5];
-    const noteNames = ["C", "D", "E", "F", "G", "A", "B"];
-    let whiteKeysConfig = [];
+    const whiteNotes =
+        naturalKeyboardNotes(startMidi, endMidi);
 
-    octaves.forEach(oct => {
-        noteNames.forEach(n => {
-            whiteKeysConfig.push({ n: n, o: oct });
+    whiteNotes.forEach(item => {
+        const key =
+            document.createElement("button");
+
+        key.type = "button";
+        key.className = "key white";
+        key.dataset.note = item.note;
+        key.dataset.octave = item.octave;
+        key.textContent = item.note;
+
+        key.setAttribute(
+            "aria-label",
+            `${item.note}${item.octave}`
+        );
+
+        key.addEventListener("click", () => {
+            onSelect(item, key);
         });
-    });
-    const finalOctave = octaves[octaves.length - 1] + 1;
-    whiteKeysConfig.push({ n: "C", o: finalOctave });
 
-    const totalWhite = whiteKeysConfig.length;
-    const blackKeyWidthPercent = (100 / totalWhite) * 0.65;
-
-    whiteKeysConfig.forEach((k) => {
-        const div = document.createElement("div");
-        div.className = "key white";
-        div.setAttribute("data-note", k.n);
-        div.setAttribute("data-octave", k.o);
-        div.innerText = k.n;
-        div.addEventListener("click", () => checkAnswer(k.n, k.o, div));
-        whiteContainer.appendChild(div);
+        whiteContainer.appendChild(key);
     });
 
-    const blackOffsets = [0, 1, 3, 4, 5];
-    const sharpNames = ["C#", "D#", "F#", "G#", "A#"];
+    const totalWhite =
+        whiteNotes.length;
 
-    octaves.forEach((oct, octIdx) => {
-        const baseWhiteIndex = octIdx * 7;
-        blackOffsets.forEach((offset, bIdx) => {
-            const whiteIdx = baseWhiteIndex + offset;
-            const sharpName = sharpNames[bIdx];
-            const leftPercent = ((whiteIdx + 1) * (100 / totalWhite)) - (blackKeyWidthPercent / 2);
+    const blackWidth =
+        (100 / totalWhite) * 0.64;
 
-            const div = document.createElement("div");
-            div.className = "key black";
-            div.setAttribute("data-note", sharpName);
-            div.setAttribute("data-octave", oct);
-            div.style.left = leftPercent + "%";
-            div.style.width = blackKeyWidthPercent + "%";
-            div.innerText = sharpName;
-            div.addEventListener("click", () => checkAnswer(sharpName, oct, div));
-            blackContainer.appendChild(div);
+    whiteNotes
+        .slice(0, -1)
+        .forEach((item, index) => {
+            if (
+                !["C", "D", "F", "G", "A"]
+                    .includes(item.note)
+            ) {
+                return;
+            }
+
+            const pitchClasses = [
+                "C",
+                "C#",
+                "D",
+                "D#",
+                "E",
+                "F",
+                "F#",
+                "G",
+                "G#",
+                "A",
+                "A#",
+                "B"
+            ];
+
+            const sharpMidi =
+                (item.octave + 1) * 12 +
+                pitchClasses.indexOf(`${item.note}#`);
+
+            if (
+                sharpMidi < startMidi ||
+                sharpMidi > endMidi
+            ) {
+                return;
+            }
+
+            const sharp =
+                noteFromMidi(sharpMidi, "treble");
+
+            const key =
+                document.createElement("button");
+
+            key.type = "button";
+            key.className = "key black";
+            key.dataset.note = sharp.note;
+            key.dataset.octave = sharp.octave;
+            key.textContent = sharp.note;
+
+            key.setAttribute(
+                "aria-label",
+                `${sharp.note}${sharp.octave}`
+            );
+
+            key.style.left =
+                `${
+                    ((index + 1) * (100 / totalWhite)) -
+                    (blackWidth / 2)
+                }%`;
+
+            key.style.width =
+                `${blackWidth}%`;
+
+            key.addEventListener("click", () => {
+                onSelect(sharp, key);
+            });
+
+            blackContainer.appendChild(key);
         });
-    });
 }
 
-function drawStaff(clef, noteString) {
-    const container = document.getElementById("staff-container");
-    container.innerHTML = "";
-
-    const vf = new VexFlow.Factory({
-        renderer: { elementId: container, width: 240, height: 130 }
-    });
-
-    const scoreTool = vf.EasyScore();
-    const system = vf.System();
-
-    system.addStave({
-        voices: [
-            scoreTool.voice(scoreTool.notes(noteString + "/w", { clef: clef }))
-        ]
-    }).addClef(clef).addTimeSignature("4/4");
-
-    vf.draw();
-}
-
-function loadNewQuestion() {
-    if (!isPlaying) return;
-    const randomIndex = Math.floor(Math.random() * activeNotePool.length);
-    currentQuestion = activeNotePool[randomIndex];
-
-    drawStaff(currentQuestion.clef, currentQuestion.vNote);
-    document.getElementById("question-box").innerText = "Identify note:";
-}
-
-function loadNewScale() {
-    if (!isPlaying) return;
-    
-    if (selectedScaleName === "random") {
-        const randomIndex = Math.floor(Math.random() * allScales.length);
-        currentScale = allScales[randomIndex];
-    } else {
-        currentScale = allScales.find(s => s.name === selectedScaleName) || allScales[0];
+function keyboardRange() {
+    if (selectedClef === "treble") {
+        return [57, 84];
     }
-    
-    scaleIndex = 0;
-    scaleStage = 1;
 
-    runScaleStage();
+    if (selectedClef === "bass") {
+        return [36, 64];
+    }
+
+    return [36, 84];
 }
 
-function runScaleStage() {
-    if (!isPlaying) return;
-    const questionBox = document.getElementById("question-box");
+function clearExerciseState() {
+    document
+        .getElementById("staff-panel")
+        .classList.add("hidden");
 
-    if (scaleStage === 1) {
-        questionBox.style.color = "";
-        questionBox.innerText = `Demo: ${currentScale.name} (${scaleIndex + 1}/${currentScale.notes.length})`;
-        const target = currentScale.notes[scaleIndex];
-        drawStaff(currentScale.clef, target.vNote);
+    document
+        .getElementById("rhythm-panel")
+        .classList.add("hidden");
 
-        highlightKeyOnPiano(target.note, target.octave);
+    document
+        .getElementById("piano-container")
+        .classList.add("hidden");
 
-        setTimeout(() => {
-            if (!isPlaying) return;
-            clearPianoHighlights();
-            scaleIndex++;
-            if (scaleIndex < currentScale.notes.length) {
-                runScaleStage();
-            } else {
-                scaleIndex = 0;
-                scaleStage = 2;
-                questionBox.innerText = `Play: ${currentScale.name}`;
-                const nextTarget = currentScale.notes[scaleIndex];
-                drawStaff(currentScale.clef, nextTarget.vNote);
-            }
-        }, 800);
-    } else if (scaleStage === 2) {
-        const target = currentScale.notes[scaleIndex];
-        drawStaff(currentScale.clef, target.vNote);
-        questionBox.innerText = `Play: ${target.note}`;
-    } else if (scaleStage === 3) {
-        questionBox.innerText = `Memory: ${currentScale.name} (${scaleIndex + 1}/${currentScale.notes.length})`;
-        document.getElementById("staff-container").innerHTML = "<div style='color:#666; font-style:italic; padding:30px;'>Staff hidden</div>";
+    document
+        .getElementById("answer-options")
+        .classList.add("hidden");
+
+    const feedback =
+        document.getElementById("feedback");
+
+    feedback.textContent = "";
+    feedback.className = "feedback";
+}
+
+function startExercise(type) {
+    activeExercise = type;
+    answeredQuestions = 0;
+    answerLocked = false;
+
+    showScreen("exercise");
+    renderQuestion();
+}
+
+function renderQuestion() {
+    answerLocked = false;
+
+    clearExerciseState();
+
+    document.getElementById("exercise-counter").textContent =
+        `${answeredQuestions} answered`;
+
+    if (activeExercise === "reading") {
+        renderReadingQuestion();
+    }
+
+    if (activeExercise === "rhythm") {
+        renderRhythmQuestion();
     }
 }
 
-function highlightKeyOnPiano(noteName, octave) {
-    const keys = document.querySelectorAll(".key");
-    keys.forEach(k => {
-        if (k.getAttribute("data-note") === noteName && parseInt(k.getAttribute("data-octave")) === octave) {
-            k.style.background = "#2196F3";
-        }
-    });
+function renderReadingQuestion() {
+    const pool =
+        getReadingPool();
+
+    currentQuestion =
+        pool[Math.floor(Math.random() * pool.length)];
+
+    document.getElementById("exercise-label").textContent =
+        "NOTE READING";
+
+    document.getElementById("exercise-title").textContent =
+        "Play this note";
+
+    document.getElementById("exercise-instruction").textContent =
+        "Choose the piano key.";
+
+    document
+        .getElementById("staff-panel")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("piano-container")
+        .classList.remove("hidden");
+
+    drawStaff(currentQuestion);
+
+    const [start, end] =
+        keyboardRange();
+
+    renderKeyboard(
+        start,
+        end,
+        checkReadingAnswer
+    );
 }
 
-function clearPianoHighlights() {
-    const keys = document.querySelectorAll(".key");
-    keys.forEach(k => {
-        k.style.background = "";
-    });
-}
-
-function startGame() {
-    score = 0;
-    streak = 0;
-    timeLeft = 60;
-    isPlaying = true;
-    
-    document.getElementById("score").innerText = score;
-    document.getElementById("restart-btn").classList.add("hidden");
-    
-    const timerWrapper = document.getElementById("timer-wrapper");
-    if (selectedGameMode === "timeAttack") {
-        timerWrapper.style.display = "inline";
-        document.getElementById("timer").innerText = timeLeft;
-    } else {
-        timerWrapper.style.display = "none";
-    }
-    
-    renderKeyboard(selectedClefMode);
-
-    document.getElementById("clef-menu-container").classList.add("hidden");
-    document.getElementById("scales-menu-container").classList.add("hidden");
-    document.getElementById("major-menu-container").classList.add("hidden");
-    document.getElementById("minor-menu-container").classList.add("hidden");
-    document.getElementById("game-container").classList.remove("hidden");
-    
-    if (selectedGameMode === "scales") {
-        loadNewScale();
-    } else {
-        loadNewQuestion();
-    }
-    
-    clearInterval(timerInterval);
-    if (selectedGameMode === "timeAttack") {
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            document.getElementById("timer").innerText = timeLeft;
-            
-            if (timeLeft <= 0) {
-                clearInterval(timerInterval);
-                isPlaying = false;
-                clearPianoHighlights();
-                endGame();
-            }
-        }, 1000);
-    }
-}
-
-function endGame() {
-    const questionBox = document.getElementById("question-box");
-    questionBox.innerHTML = `Finished. Score: <strong>${score}</strong>`;
-    clearPianoHighlights();
-    
-    const bestScore = localStorage.getItem("noteGG_best") || 0;
-    if (score > bestScore) {
-        localStorage.setItem("noteGG_best", score);
-        questionBox.innerHTML += ` (New Best)`;
-    } else {
-        questionBox.innerHTML += ` (Best: ${bestScore})`;
-    }
-
-    document.getElementById("restart-btn").classList.remove("hidden");
-    document.getElementById("staff-container").innerHTML = "";
-}
-
-function checkScaleAnswer(selectedKey, selectedOctave, keyElement) {
-    if (scaleStage === 1) return;
-
-    const target = currentScale.notes[scaleIndex];
-    const questionBox = document.getElementById("question-box");
-    const isLastNoteOfScale = (scaleIndex === currentScale.notes.length - 1);
-
-    if (selectedKey === target.note && selectedOctave === target.octave) {
-        keyElement.style.background = "#4CAF50";
-        questionBox.style.color = "#4CAF50";
-        score += 10;
-        document.getElementById("score").innerText = score;
-        
-        scaleIndex++;
-        if (scaleIndex >= currentScale.notes.length) {
-            setTimeout(() => {
-                if (!(scaleStage === 3 && isLastNoteOfScale)) {
-                    clearPianoHighlights();
-                }
-                questionBox.style.color = "";
-                
-                if (scaleStage === 2) {
-                    scaleStage = 3;
-                    scaleIndex = 0;
-                    questionBox.innerText = `Starting memory mode for ${currentScale.name}.`;
-                    setTimeout(() => runScaleStage(), 1500);
-                } else if (scaleStage === 3) {
-                    score += 100;
-                    document.getElementById("score").innerText = `Mastered: ${currentScale.name}`;
-                    setTimeout(() => {
-                        if (!isPlaying) return;
-                        clearPianoHighlights();
-                        loadNewScale();
-                    }, 1500);
-                }
-            }, 300);
-        } else {
-            const nextTarget = currentScale.notes[scaleIndex];
-            if (scaleStage === 2) {
-                questionBox.innerText = `Next: ${nextTarget.note}`;
-                drawStaff(currentScale.clef, nextTarget.vNote);
-            } else {
-                runScaleStage();
-            }
-            
-            setTimeout(() => {
-                if (!isPlaying) return;
-                keyElement.style.background = "";
-                questionBox.style.color = "";
-            }, 300);
-        }
-    } else {
-        keyElement.style.background = "#f44336";
-        questionBox.style.color = "#f44336";
-        questionBox.innerText = `Incorrect. Expected ${target.note}.`;
-        
-        scaleIndex = 0;
-        setTimeout(() => {
-            if (!isPlaying) return;
-            clearPianoHighlights();
-            keyElement.style.background = "";
-            questionBox.style.color = "";
-            runScaleStage();
-        }, 800);
-    }
-}
-
-function checkAnswer(selectedKey, selectedOctave, keyElement) {
-    if (!isPlaying) return;
-    
-    if (selectedGameMode === "scales") {
-        checkScaleAnswer(selectedKey, selectedOctave, keyElement);
+function checkReadingAnswer(answer, key) {
+    if (answerLocked) {
         return;
     }
-    
-    const questionBox = document.getElementById("question-box");
-    
-    if (selectedKey === currentQuestion.note && selectedOctave === currentQuestion.octave) {
-        streak++;
-        score += (streak >= 3 ? 15 : 10);
-        
-        document.getElementById("score").innerText = score;
-        
-        keyElement.style.background = "#4CAF50";
-        questionBox.style.color = "#4CAF50";
-        questionBox.innerText = "Correct";
-    } else {
-        streak = 0;
-        keyElement.style.background = "#f44336";
-        questionBox.style.color = "#f44336";
-        questionBox.innerText = `Incorrect. Was ${currentQuestion.note}`;
+
+    const correct =
+        answer.note === currentQuestion.note &&
+        answer.octave === currentQuestion.octave;
+
+    finishAnswer(
+        correct,
+        key,
+        `${currentQuestion.note}${currentQuestion.octave}`
+    );
+}
+
+function renderRhythmQuestion() {
+    currentQuestion =
+        rhythmQuestions[
+            Math.floor(
+                Math.random() *
+                rhythmQuestions.length
+            )
+        ];
+
+    document.getElementById("exercise-label").textContent =
+        "RHYTHM";
+
+    document.getElementById("exercise-title").textContent =
+        "How many beats?";
+
+    document.getElementById("exercise-instruction").textContent =
+        "Choose one answer.";
+
+    document
+        .getElementById("rhythm-panel")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("answer-options")
+        .classList.remove("hidden");
+
+    document.getElementById("rhythm-symbol").textContent =
+        currentQuestion.symbol;
+
+    document.getElementById("rhythm-name").textContent =
+        "";
+
+    renderAnswerOptions(
+        ["0.5", "1", "2", "4"],
+        currentQuestion.value
+    );
+}
+
+function beatLabel(value) {
+    if (value === "0.5") {
+        return "½ beat";
     }
-    
+
+    return `${value} ${
+        value === "1" ? "beat" : "beats"
+    }`;
+}
+
+function renderAnswerOptions(values, correctValue) {
+    const container =
+        document.getElementById("answer-options");
+
+    container.innerHTML = "";
+
+    values.forEach(value => {
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+        button.className = "answer-option";
+        button.textContent = beatLabel(value);
+
+        button.addEventListener("click", () => {
+            if (answerLocked) {
+                return;
+            }
+
+            const correct =
+                value === correctValue;
+
+            button.classList.add(
+                correct ? "correct" : "incorrect"
+            );
+
+            finishAnswer(
+                correct,
+                null,
+                beatLabel(correctValue)
+            );
+        });
+
+        container.appendChild(button);
+    });
+}
+
+function finishAnswer(correct, key, correctLabel) {
+    if (answerLocked) {
+        return;
+    }
+
+    answerLocked = true;
+
+    const token =
+        sessionToken;
+
+    const feedback =
+        document.getElementById("feedback");
+
+    if (correct) {
+        if (key) {
+            key.classList.add("correct");
+        }
+
+        feedback.textContent = "Correct";
+        feedback.className = "feedback success";
+    } else {
+        if (key) {
+            key.classList.add("incorrect");
+        }
+
+        feedback.textContent =
+            `Answer: ${correctLabel}`;
+
+        feedback.className =
+            "feedback error";
+    }
+
+    answeredQuestions++;
+
+    document.getElementById("exercise-counter").textContent =
+        `${answeredQuestions} answered`;
+
     setTimeout(() => {
-        if (!isPlaying) return;
-        keyElement.style.background = "";
-        questionBox.style.color = "";
-        loadNewQuestion();
-    }, 400);
+        if (token !== sessionToken) {
+            return;
+        }
+
+        renderQuestion();
+    }, 750);
 }
 
-function populateScaleMenus() {
-    const majorGrid = document.getElementById("major-scales-grid");
-    const minorGrid = document.getElementById("minor-scales-grid");
-    majorGrid.innerHTML = "";
-    minorGrid.innerHTML = "";
-
-    allScales.forEach(scale => {
-        const btn = document.createElement("button");
-        btn.className = "scale-select-btn menu-btn";
-        btn.innerText = scale.name.replace(" Scale", "");
-        btn.setAttribute("data-scale", scale.name);
-        
-        btn.addEventListener("click", () => {
-            selectedGameMode = "scales";
-            selectedScaleName = scale.name;
-            selectedClefMode = scale.clef;
-            startGame();
-        });
-
-        if (scale.type === "major") {
-            majorGrid.appendChild(btn);
-        } else {
-            minorGrid.appendChild(btn);
-        }
-    });
-}
-
-window.onload = () => {
-    populateScaleMenus();
-
-    const menuContainer = document.getElementById("menu-container");
-    const lessonsMenuContainer = document.getElementById("lessons-menu-container");
-    const lessonContentContainer = document.getElementById("lesson-content-container");
-    const exercisesMenuContainer = document.getElementById("exercises-menu-container");
-    const modeMenuContainer = document.getElementById("mode-menu-container");
-    const scalesMenuContainer = document.getElementById("scales-menu-container");
-    const majorMenuContainer = document.getElementById("major-menu-container");
-    const minorMenuContainer = document.getElementById("minor-menu-container");
-    const clefMenuContainer = document.getElementById("clef-menu-container");
-    const gameContainer = document.getElementById("game-container");
-    
-    const gotoLessonsMenuBtn = document.getElementById("goto-lessons-menu");
-    const gotoExercisesMenuBtn = document.getElementById("goto-exercises-menu");
-    const gotoSightReadingBtn = document.getElementById("goto-sight-reading");
-    const gotoScalesMenuBtn = document.getElementById("goto-scales-menu");
-    const gotoMajorMenuBtn = document.getElementById("goto-major-menu");
-    const gotoMinorMenuBtn = document.getElementById("goto-minor-menu");
-    
-    const backToMainFromLessonsBtn = document.getElementById("back-to-main-from-lessons");
-    const backToLessonsMenuBtn = document.getElementById("back-to-lessons-menu");
-    const backToMainFromExercisesBtn = document.getElementById("back-to-main-from-exercises");
-    const backToExercisesFromModeBtn = document.getElementById("back-to-exercises");
-    const backToExercisesFromScalesBtn = document.getElementById("back-to-exercises-from-scales");
-    const backToScalesMainBtn = document.getElementById("back-to-scales-main");
-    const backToScalesMainMinorBtn = document.getElementById("back-to-scales-main-minor");
-    const backToModeBtn = document.getElementById("back-to-mode");
-    const backToClefMenuBtn = document.getElementById("back-to-clef-menu");
-    
-    const lessonSelectBtns = document.querySelectorAll(".lesson-select-btn");
-    const modeSelectBtns = document.querySelectorAll(".mode-select-btn");
-    const clefSelectBtns = document.querySelectorAll(".clef-select-btn");
-    const restartBtn = document.getElementById("restart-btn");
-
-    gotoLessonsMenuBtn.addEventListener("click", () => {
-        menuContainer.classList.add("hidden");
-        lessonsMenuContainer.classList.remove("hidden");
-    });
-
-    lessonSelectBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-            const lessonKey = btn.getAttribute("data-lesson");
-            const lesson = lessonsData[lessonKey];
-            if (lesson) {
-                document.getElementById("lesson-title").innerText = lesson.title;
-                document.getElementById("lesson-body").innerHTML = lesson.content;
-                lessonsMenuContainer.classList.add("hidden");
-                lessonContentContainer.classList.remove("hidden");
-            }
+document
+    .querySelectorAll("[data-go]")
+    .forEach(button => {
+        button.addEventListener("click", () => {
+            showScreen(button.dataset.go);
         });
     });
 
-    backToMainFromLessonsBtn.addEventListener("click", () => {
-        lessonsMenuContainer.classList.add("hidden");
-        menuContainer.classList.remove("hidden");
-    });
+document
+    .querySelectorAll(".practice-card")
+    .forEach(button => {
+        button.addEventListener("click", () => {
+            const type =
+                button.dataset.exercise;
 
-    backToLessonsMenuBtn.addEventListener("click", () => {
-        lessonContentContainer.classList.add("hidden");
-        lessonsMenuContainer.classList.remove("hidden");
-    });
-
-    gotoExercisesMenuBtn.addEventListener("click", () => {
-        menuContainer.classList.add("hidden");
-        exercisesMenuContainer.classList.remove("hidden");
-    });
-
-    backToMainFromExercisesBtn.addEventListener("click", () => {
-        exercisesMenuContainer.classList.add("hidden");
-        menuContainer.classList.remove("hidden");
-    });
-
-    gotoSightReadingBtn.addEventListener("click", () => {
-        exercisesMenuContainer.classList.add("hidden");
-        modeMenuContainer.classList.remove("hidden");
-    });
-
-    gotoScalesMenuBtn.addEventListener("click", () => {
-        exercisesMenuContainer.classList.add("hidden");
-        scalesMenuContainer.classList.remove("hidden");
-    });
-
-    gotoMajorMenuBtn.addEventListener("click", () => {
-        scalesMenuContainer.classList.add("hidden");
-        majorMenuContainer.classList.remove("hidden");
-    });
-
-    gotoMinorMenuBtn.addEventListener("click", () => {
-        scalesMenuContainer.classList.add("hidden");
-        minorMenuContainer.classList.remove("hidden");
-    });
-
-    backToExercisesFromModeBtn.addEventListener("click", () => {
-        modeMenuContainer.classList.add("hidden");
-        exercisesMenuContainer.classList.remove("hidden");
-    });
-
-    backToExercisesFromScalesBtn.addEventListener("click", () => {
-        scalesMenuContainer.classList.add("hidden");
-        exercisesMenuContainer.classList.remove("hidden");
-    });
-
-    backToScalesMainBtn.addEventListener("click", () => {
-        majorMenuContainer.classList.add("hidden");
-        scalesMenuContainer.classList.remove("hidden");
-    });
-
-    backToScalesMainMinorBtn.addEventListener("click", () => {
-        minorMenuContainer.classList.add("hidden");
-        scalesMenuContainer.classList.remove("hidden");
-    });
-
-    backToModeBtn.addEventListener("click", () => {
-        clefMenuContainer.classList.add("hidden");
-        modeMenuContainer.classList.remove("hidden");
-    });
-
-    backToClefMenuBtn.addEventListener("click", () => {
-        gameContainer.classList.add("hidden");
-        if (selectedGameMode === "scales") {
-            scalesMenuContainer.classList.remove("hidden");
-        } else {
-            clefMenuContainer.classList.remove("hidden");
-        }
-        isPlaying = false;
-        clearInterval(timerInterval);
-    });
-
-    modeSelectBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-            selectedGameMode = btn.getAttribute("data-type");
-            modeMenuContainer.classList.add("hidden");
-            clefMenuContainer.classList.remove("hidden");
-        });
-    });
-
-    clefSelectBtns.forEach(btn => {
-        btn.addEventListener("click", () => {
-            selectedClefMode = btn.getAttribute("data-mode");
-            if (selectedClefMode === "both") {
-                activeNotePool = fullNotePool;
-            } else if (selectedClefMode === "bass") {
-                activeNotePool = bassNotes;
+            if (type === "reading") {
+                showScreen("setup");
             } else {
-                activeNotePool = trebleNotes;
+                startExercise(type);
             }
-            startGame();
         });
     });
 
-    restartBtn.addEventListener("click", () => {
-        startGame();
+document
+    .querySelectorAll("[data-clef]")
+    .forEach(button => {
+        button.addEventListener("click", () => {
+            selectedClef =
+                button.dataset.clef;
+
+            document
+                .querySelectorAll("[data-clef]")
+                .forEach(option => {
+                    const selected =
+                        option === button;
+
+                    option.classList.toggle(
+                        "selected",
+                        selected
+                    );
+
+                    option.setAttribute(
+                        "aria-checked",
+                        String(selected)
+                    );
+                });
+        });
     });
-};
+
+document
+    .getElementById("start-reading")
+    .addEventListener("click", () => {
+        startExercise("reading");
+    });
+
+document
+    .getElementById("previous-course")
+    .addEventListener("click", () => {
+        openCourse(
+            Math.max(
+                0,
+                selectedCourseIndex - 1
+            )
+        );
+    });
+
+document
+    .getElementById("next-course")
+    .addEventListener("click", () => {
+        if (
+            selectedCourseIndex >=
+            courses.length - 1
+        ) {
+            showScreen("learn");
+        } else {
+            openCourse(
+                selectedCourseIndex + 1
+            );
+        }
+    });
+
+renderCourseGrid();
+showScreen("home");
