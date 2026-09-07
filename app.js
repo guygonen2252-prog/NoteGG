@@ -24,6 +24,16 @@ const courses = [
                 ]
             },
             {
+                title: "Find notes on the keyboard",
+                text: "Black keys repeat in groups of two and three. Use those groups as landmarks.",
+                visual: { type: "keyboard", caption: "C is left of two black keys. F is left of three black keys." }
+            },
+            {
+                title: "Find C and F",
+                text: "C is immediately left of two black keys. F is immediately left of three black keys.",
+                chips: [["C", "Left of 2 black keys"], ["F", "Left of 3 black keys"]]
+            },
+            {
                 title: "Measures",
                 text: "Bar lines divide music into small sections called measures.",
                 example: "bar line  |  measure  |  bar line"
@@ -112,29 +122,13 @@ const courses = [
     },
     {
         title: "Rhythm",
-        description: "Beat, note values and rests.",
-        summary: "Rhythm tells you when to play and how long to hold a note.",
-        takeaway: "Count a steady beat. Give every note its full value.",
+        description: "Note values and matching rests.",
+        summary: "Each note and rest symbol represents a specific length of sound or silence.",
+        takeaway: "Notes create sound. Rests create silence. Their values are counted in the same way.",
         sections: [
-            {
-                title: "The beat",
-                text: "The beat is the steady pulse of the music.",
-                chips: [["♩  ♩  ♩  ♩", "Count: 1  2  3  4"]]
-            },
-            {
-                title: "Note values",
-                text: "Learn the main beat divisions.",
-                chips: [
-                    ["♩", "Quarter note — 1 beat"],
-                    ["♪", "Eighth note — ½ beat"],
-                    ["𝅘𝅥𝅯", "Sixteenth note — ¼ beat"]
-                ]
-            },
-            {
-                title: "Rests",
-                text: "A rest marks silence. Its shape shows how long the silence lasts.",
-                chips: [["𝄽", "Quarter rest"], ["𝄾", "Eighth rest"], ["𝄿", "Sixteenth rest"]]
-            }
+            { title: "The beat", text: "The beat is the steady pulse of the music.", chips: [["♩  ♩  ♩  ♩", "CountCount: 1  2  3  4"]] },
+            { title: "Notes", text: "Learn each note by its proper name.", chips: [["𝅝", "Whole note"], ["𝅗𝅥", "Half note"], ["♩", "Quarter note"], ["♪", "Eighth note"], ["𝅘𝅥𝅯", "Sixteenth note"]] },
+            { title: "Rests", text: "Rests use the same lengths, but represent silence.", chips: [["𝄻", "Whole rest"], ["𝄼", "Half rest"], ["𝄽", "Quarter rest"], ["𝄾", "Eighth rest"], ["𝄿", "Sixteenth rest"]] }
         ]
     },
     {
@@ -162,52 +156,126 @@ const courses = [
     },
     {
         title: "Key Signatures",
-        description: "The sharps or flats used throughout a piece.",
-        summary: "A key signature appears after the clef and shows which notes are normally sharp or flat.",
-        takeaway: "Read the clef, then the key signature, before reading the notes.",
+        description: "All commonly written major key signatures.",
+        summary: "The symbols after the clef show which notes are normally sharp or flat.",
+        takeaway: "Major and minor keys can share the same key signature.",
         sections: [
-            {
-                title: "C major",
-                text: "C major has no sharps or flats.",
-                visual: { type: "key", clef: "treble", key: "C", caption: "C major — no sharps or flats" }
-            },
-            {
-                title: "G major",
-                text: "G major has one sharp: F♯. Every F is normally played as F♯.",
-                visual: { type: "key", clef: "treble", key: "G", caption: "G major — F♯" }
-            },
-            {
-                title: "D major",
-                text: "D major has two sharps: F♯ and C♯.",
-                visual: { type: "key", clef: "treble", key: "D", caption: "D major — F♯ and C♯" }
-            },
-            {
-                title: "F major",
-                text: "F major has one flat: B♭. Every B is normally played as B♭.",
-                visual: { type: "key", clef: "treble", key: "F", caption: "F major — B♭" }
-            },
-            {
-                title: "B-flat major",
-                text: "B-flat major has two flats: B♭ and E♭.",
-                visual: { type: "key", clef: "treble", key: "Bb", caption: "B♭ major — B♭ and E♭" }
-            },
-            {
-                title: "Remember the order",
-                text: "Sharps and flats always appear in the same order.",
-                chips: [["F  C  G  D  A  E  B", "Order of sharps"], ["B  E  A  D  G  C  F", "Order of flats"]]
-            }
+            { title: "How they work", text: "A key-signature accidental applies to that note name throughout the music, unless another accidental changes it." },
+            ...[
+                ["C major", "A minor", "C", "No sharps or flats"],
+                ["G major", "E minor", "G", "1 sharp"],
+                ["D major", "B minor", "D", "2 sharps"],
+                ["A major", "F-sharp minor", "A", "3 sharps"],
+                ["E major", "C-sharp minor", "E", "4 sharps"],
+                ["B major", "G-sharp minor", "B", "5 sharps"],
+                ["F-sharp major", "D-sharp minor", "F#", "6 sharps"],
+                ["C-sharp major", "A-sharp minor", "C#", "7 sharps"],
+                ["F major", "D minor", "F", "1 flat"],
+                ["B-flat major", "G minor", "Bb", "2 flats"],
+                ["E-flat major", "C minor", "Eb", "3 flats"],
+                ["A-flat major", "F minor", "Ab", "4 flats"],
+                ["D-flat major", "B-flat minor", "Db", "5 flats"],
+                ["G-flat major", "E-flat minor", "Gb", "6 flats"],
+                ["C-flat major", "A-flat minor", "Cb", "7 flats"]
+            ].map(([major, minor, key, detail]) => ({
+                title: major,
+                text: `${detail}. It shares this signature with ${minor}.`,
+                visual: { type: "key", clef: "treble", key, caption: `${major} · ${minor}` }
+            })),
+            { title: "Order", text: "Sharps and flats always appear in the same order.", chips: [["F C G D A E B", "Sharps"], ["B E A D G C F", "Flats"]] }
         ]
-    }
+    }];
+
+
+function makeScaleNotes(tonic) {
+    const letters = ["c", "d", "e", "f", "g", "a", "b"];
+    const start = letters.indexOf(tonic[0].toLowerCase());
+    let octave = start >= 5 ? 3 : 4;
+
+    return Array.from({ length: 8 }, (_, step) => {
+        const position = start + step;
+        if (step > 0 && position % 7 === 0) octave++;
+        return `${letters[position % 7]}${octave}`;
+    });
+}
+
+const majorScaleSpecs = [
+    ["C major", "C"], ["G major", "G"], ["D major", "D"], ["A major", "A"],
+    ["E major", "E"], ["B major", "B"], ["F-sharp major", "F#"], ["C-sharp major", "C#"],
+    ["F major", "F"], ["B-flat major", "Bb"], ["E-flat major", "Eb"], ["A-flat major", "Ab"]
 ];
 
+const minorScaleSpecs = [
+    ["A minor", "C"], ["E minor", "G"], ["B minor", "D"], ["F-sharp minor", "A"],
+    ["C-sharp minor", "E"], ["G-sharp minor", "B"], ["D-sharp minor", "F#"], ["A-sharp minor", "C#"],
+    ["D minor", "F"], ["G minor", "Bb"], ["C minor", "Eb"], ["F minor", "Ab"]
+];
+
+courses.push(
+    {
+        title: "Dynamics",
+        description: "How softly or loudly to play.",
+        summary: "Dynamics use Italian symbols to show volume and changes in volume.",
+        takeaway: "More p means softer. More f means louder.",
+        sections: [
+            { title: "Soft", text: "Piano means soft.", chips: [["ppp", "Very, very soft"], ["pp", "Very soft"], ["p", "Soft"]] },
+            { title: "Medium", text: "Mezzo means moderately.", chips: [["mp", "Moderately soft"], ["mf", "Moderately loud"]] },
+            { title: "Loud", text: "Forte means loud.", chips: [["f", "Loud"], ["ff", "Very loud"], ["fff", "Very, very loud"]] },
+            { title: "Gradual change", text: "Crescendo becomes louder. Diminuendo becomes softer.", chips: [["<", "Crescendo"], [">", "Diminuendo"]] },
+            { title: "Sudden emphasis", text: "Sforzando means a sudden strong emphasis.", chips: [["sfz", "Sforzando"]] }
+        ]
+    },
+    {
+        title: "Music Signs",
+        description: "Common symbols used in written music.",
+        summary: "These signs control repetition, articulation, phrasing and timing.",
+        takeaway: "Notice each sign before playing the passage.",
+        sections: [
+            { title: "Repeat", text: "Play the marked section again.", chips: [["𝄆  𝄇", "Repeat signs"]] },
+            { title: "Fermata", text: "Hold the note or rest longer.", chips: [["𝄐", "Fermata"]] },
+            { title: "Staccato", text: "Play the note short and detached.", chips: [["•", "Staccato"]] },
+            { title: "Accent", text: "Play the note with extra emphasis.", chips: [[">", "Accent"]] },
+            { title: "Tie", text: "Join two notes of the same pitch into one longer sound.", chips: [["⌒", "Tie"]] },
+            { title: "Slur", text: "Connect different notes into one smooth phrase.", chips: [["⌒", "Slur"]] },
+            { title: "Octave signs", text: "8va means one octave higher. 8vb means one octave lower.", chips: [["8va", "Higher"], ["8vb", "Lower"]] }
+        ]
+    },
+    {
+        title: "Major Scales",
+        description: "All 12 major scales.",
+        summary: "Major scales use the pattern: whole, whole, half, whole, whole, whole, half.",
+        takeaway: "Each scale begins and ends on its tonic.",
+        sections: majorScaleSpecs.map(([name, key]) => ({
+            title: name,
+            text: `${name} ascending through one octave.`,
+            visual: { type: "scale", clef: "treble", key, notes: makeScaleNotes(name), caption: name }
+        }))
+    },
+    {
+        title: "Natural Minor Scales",
+        description: "All 12 natural minor scales.",
+        summary: "Natural minor scales use: whole, half, whole, whole, half, whole, whole.",
+        takeaway: "Each natural minor shares a signature with a relative major key.",
+        sections: minorScaleSpecs.map(([name, key]) => ({
+            title: name,
+            text: `${name} ascending through one octave.`,
+            visual: { type: "scale", clef: "treble", key, notes: makeScaleNotes(name), caption: name }
+        }))
+    }
+);
+
 const rhythmQuestions = [
+    { symbol: "𝅝", name: "Whole note" },
+    { symbol: "𝅗𝅥", name: "Half note" },
     { symbol: "♩", name: "Quarter note" },
     { symbol: "♪", name: "Eighth note" },
     { symbol: "𝅘𝅥𝅯", name: "Sixteenth note" },
+    { symbol: "𝄻", name: "Whole rest" },
+    { symbol: "𝄼", name: "Half rest" },
     { symbol: "𝄽", name: "Quarter rest" },
     { symbol: "𝄾", name: "Eighth rest" },
     { symbol: "𝄿", name: "Sixteenth rest" }
-];
+]
 
 const screens = {
     home: document.getElementById("home-screen"),
@@ -318,7 +386,7 @@ function openCourse(index) {
                         section.visual
                             ? `
                                 <div
-                                    class="lesson-visual"
+                                    class="lesson-visual${section.visual.type === "scale" ? " lesson-visual-wide" : ""}"
                                     data-visual-index="${sectionIndex}"
                                 >
                                     <div class="lesson-staff"></div>
@@ -395,9 +463,21 @@ function renderCourseVisuals(course) {
             target.id =
                 `course-visual-${selectedCourseIndex}-${visualIndex}`;
 
+            if (visual.type === "keyboard") {
+                target.innerHTML = `
+                    <div class="mini-keyboard" aria-label="Piano keyboard landmarks">
+                        <div class="mini-white-keys">
+                            ${["C", "D", "E", "F", "G", "A", "B"].map(note => `<span class="mini-white-key${note === "C" || note === "F" ? " landmark" : ""}">${note}</span>`).join("")}
+                        </div>
+                        ${[1, 2, 3, 4, 5].map(number => `<span class="mini-black-key black-${number}"></span>`).join("")}
+                    </div>
+                `;
+                return;
+            }
+
             const width = Math.max(
                 220,
-                Math.min(300, target.clientWidth || 300)
+                Math.min(visual.type === "scale" ? 560 : 320, target.clientWidth || (visual.type === "scale" ? 560 : 320))
             );
 
             const factory = new (window.Vex?.Flow || window.VexFlow).Factory({
@@ -434,7 +514,7 @@ function renderCourseVisuals(course) {
                 .addStave({ voices: [voice] })
                 .addClef(visual.clef);
 
-            if (visual.type === "key") {
+            if (visual.key) {
                 stave.addKeySignature(visual.key);
             }
 
