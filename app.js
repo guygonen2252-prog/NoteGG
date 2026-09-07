@@ -77,6 +77,16 @@ const courses = [
                     notes: ["c4"],
                     caption: "C4 — middle C"
                 }
+            },
+            {
+                title: "Complete treble range",
+                text: "Read upward from A3 to C6. Each step moves to the next line or space.",
+                visual: {
+                    type: "range",
+                    clef: "treble",
+                    notes: ["a3", "b3", "c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5", "d5", "e5", "f5", "g5", "a5", "b5", "c6"],
+                    caption: "A3 → C6"
+                }
             }
         ]
     },
@@ -116,6 +126,16 @@ const courses = [
                     clef: "bass",
                     notes: ["c4"],
                     caption: "C4 — middle C"
+                }
+            },
+            {
+                title: "Complete bass range",
+                text: "Read upward from C2 to E4. Each step moves to the next line or space.",
+                visual: {
+                    type: "range",
+                    clef: "bass",
+                    notes: ["c2", "d2", "e2", "f2", "g2", "a2", "b2", "c3", "d3", "e3", "f3", "g3", "a3", "b3", "c4", "d4", "e4"],
+                    caption: "C2 → E4"
                 }
             }
         ]
@@ -386,7 +406,7 @@ function openCourse(index) {
                         section.visual
                             ? `
                                 <div
-                                    class="lesson-visual${section.visual.type === "scale" ? " lesson-visual-wide" : ""}"
+                                    class="lesson-visual${["scale", "range"].includes(section.visual.type) ? " lesson-visual-wide" : ""}"
                                     data-visual-index="${sectionIndex}"
                                 >
                                     <div class="lesson-staff"></div>
@@ -477,7 +497,7 @@ function renderCourseVisuals(course) {
 
             const width = Math.max(
                 220,
-                Math.min(visual.type === "scale" ? 560 : 320, target.clientWidth || (visual.type === "scale" ? 560 : 320))
+                Math.min(["scale", "range"].includes(visual.type) ? 680 : 320, target.clientWidth || (["scale", "range"].includes(visual.type) ? 680 : 320))
             );
 
             const factory = new (window.Vex?.Flow || window.VexFlow).Factory({
