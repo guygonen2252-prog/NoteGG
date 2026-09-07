@@ -49,11 +49,13 @@ const courses = [
             {
                 title: "Lines",
                 text: "From bottom to top: E, G, B, D, F.",
+                visual: { type: "notes", clef: "treble", notes: ["e4", "g4", "b4", "d5", "f5"], caption: "E G B D F — notes on the lines" },
                 chips: [["E  G  B  D  F", "Treble lines"]]
             },
             {
                 title: "Spaces",
                 text: "From bottom to top: F, A, C, E.",
+                visual: { type: "notes", clef: "treble", notes: ["f4", "a4", "c5", "e5"], caption: "F A C E — notes in the spaces" },
                 chips: [["F  A  C  E", "Treble spaces"]]
             },
             {
@@ -87,11 +89,13 @@ const courses = [
             {
                 title: "Lines",
                 text: "From bottom to top: G, B, D, F, A.",
+                visual: { type: "notes", clef: "bass", notes: ["g2", "b2", "d3", "f3", "a3"], caption: "G B D F A — notes on the lines" },
                 chips: [["G  B  D  F  A", "Bass lines"]]
             },
             {
                 title: "Spaces",
                 text: "From bottom to top: A, C, E, G.",
+                visual: { type: "notes", clef: "bass", notes: ["a2", "c3", "e3", "g3"], caption: "A C E G — notes in the spaces" },
                 chips: [["A  C  E  G", "Bass spaces"]]
             },
             {
@@ -115,7 +119,7 @@ const courses = [
             {
                 title: "The beat",
                 text: "The beat is the steady pulse of the music.",
-                example: "1   2   3   4"
+                chips: [["♩  ♩  ♩  ♩", "Count: 1  2  3  4"]]
             },
             {
                 title: "Note values",
@@ -141,17 +145,17 @@ const courses = [
         sections: [
             {
                 title: "Sharp",
-                text: "A sharp raises a note by one piano key.",
+                text: "A sharp raises a note by one semitone.",
                 chips: [["♯", "Raise"]]
             },
             {
                 title: "Flat",
-                text: "A flat lowers a note by one piano key.",
+                text: "A flat lowers a note by one semitone.",
                 chips: [["♭", "Lower"]]
             },
             {
                 title: "Natural",
-                text: "A natural cancels a sharp or flat.",
+                text: "A natural cancels a sharp or flat and returns the note to its natural pitch.",
                 chips: [["♮", "Cancel"]]
             }
         ]
@@ -402,25 +406,20 @@ function renderCourseVisuals(course) {
                     width: width - 30
                 });
 
-            const duration = visual.type === "notes" && visual.notes.length === 1 ? "w" : "h";
-
             const notes =
                 visual.type === "notes"
                     ? visual.notes
-                        .map(note => `${note}/${duration}`)
+                        .map(note => `${note}/q`)
                         .join(", ")
                     : "c5/w";
 
+            const voice = score.voice(
+                score.notes(notes, { clef: visual.clef }),
+                { time: visual.type === "notes" ? `${visual.notes.length}/4` : "4/4" }
+            );
+
             const stave = system
-                .addStave({
-                    voices: [
-                        score.voice(
-                            score.notes(notes, {
-                                clef: visual.clef
-                            })
-                        )
-                    ]
-                })
+                .addStave({ voices: [voice] })
                 .addClef(visual.clef);
 
             if (visual.type === "key") {
