@@ -384,7 +384,7 @@ function renderCourseVisuals(course) {
                 Math.min(300, target.clientWidth || 300)
             );
 
-            const factory = new VexFlow.Factory({
+            const factory = new (window.Vex?.Flow || window.VexFlow).Factory({
                 renderer: {
                     elementId: target.id,
                     width: width,
@@ -498,7 +498,7 @@ function drawStaff(question) {
         Math.min(300, container.clientWidth || 300)
     );
 
-    const factory = new VexFlow.Factory({
+    const factory = new (window.Vex?.Flow || window.VexFlow).Factory({
         renderer: {
             elementId: container.id,
             width: width,
