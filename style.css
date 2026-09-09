@@ -524,63 +524,48 @@ h1 {
 }
 
 
-.mini-practice-start {
-    margin-top: 18px;
-    padding: 10px 16px;
-    border: 1px solid var(--navy);
-    border-radius: 6px;
-    background: transparent;
-    color: var(--navy);
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-}
 
-.mini-practice-start:hover {
-    background: var(--navy);
-    color: #fff;
-}
-
-.mini-practice {
-    margin-top: 14px;
+.notation-fallback {
+    position: relative;
+    width: 100%;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
     padding: 20px;
-    border-left: 3px solid var(--gold);
-    background: var(--gold-soft);
-}
-
-.mini-practice-count,
-.mini-practice-prompt {
-    display: block;
-}
-
-.mini-practice-count {
-    margin-bottom: 8px;
-    color: var(--gold);
-    font-size: .78rem;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-}
-
-.mini-practice-prompt {
+    overflow: hidden;
     color: var(--navy);
-    font-size: 1rem;
 }
 
-.mini-practice-symbol {
-    margin: 16px 0;
-    color: var(--navy);
-    font-size: 2rem;
-    font-weight: 500;
+.fallback-clef {
+    position: relative;
+    z-index: 2;
+    width: 52px;
+    flex: 0 0 52px;
+    font-family: serif;
+    font-size: 4.2rem;
+    line-height: 1;
 }
 
-.mini-practice-options {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 9px;
+.fallback-staff-lines {
+    position: absolute;
+    inset: 38px 18px auto 18px;
+    height: 42px;
+    background: repeating-linear-gradient(
+        to bottom,
+        var(--navy) 0,
+        var(--navy) 1px,
+        transparent 1px,
+        transparent 10px
+    );
+    opacity: .55;
 }
 
-.mini-practice-complete {
-    margin: 0;
-    color: var(--success) !important;
-    font-weight: 600;
+.notation-fallback strong {
+    position: relative;
+    z-index: 2;
+    margin-left: auto;
+    padding: 5px 8px;
+    background: var(--paper);
+    font-size: .82rem;
 }
