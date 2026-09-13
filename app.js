@@ -1,46 +1,5 @@
 const courses = [
     {
-        title: "Music Basics",
-        description: "Staff, pitch and measures.",
-        summary: "Start here if written music is completely new to you.",
-        takeaway: "Higher notes sit higher. Bar lines divide music into measures.",
-        sections: [
-            {
-                title: "The staff",
-                text: "Music is written on five lines and four spaces.",
-                visual: {
-                    type: "notes",
-                    clef: "treble",
-                    notes: ["c4", "c5"],
-                    caption: "Low C → High C"
-                }
-            },
-            {
-                title: "Clefs",
-                text: "Treble clef is typically used for higher notes, while bass clef is used for lower notes.",
-                chips: [
-                    ["𝄞", "Treble"],
-                    ["𝄢", "Bass"]
-                ]
-            },
-            {
-                title: "Find notes on the keyboard",
-                text: "Black keys repeat in groups of two and three. Use those groups as landmarks.",
-                visual: { type: "keyboard", caption: "C is left of two black keys. F is left of three black keys." }
-            },
-            {
-                title: "Find C and F",
-                text: "C is immediately left of two black keys. F is immediately left of three black keys.",
-                chips: [["C", "Left of 2 black keys"], ["F", "Left of 3 black keys"]]
-            },
-            {
-                title: "Measures",
-                text: "Bar lines divide music into small sections called measures.",
-                example: "bar line  |  measure  |  bar line"
-            }
-        ]
-    },
-    {
         title: "Treble Clef",
         description: "Notes often played by the right hand.",
         summary: "Use G as your first landmark. Then count up or down.",
