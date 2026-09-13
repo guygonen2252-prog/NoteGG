@@ -347,8 +347,15 @@ h1 {
     top: 0;
     width: 9%;
     height: 62%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
     border-radius: 0 0 4px 4px;
     background: var(--navy);
+    color: #fff;
+    font-size: .58rem;
+    font-weight: 600;
 }
 
 .black-1 { left: 10%; }
