@@ -1,145 +1,203 @@
 const courses = [
     {
         title: "Treble Clef",
-        description: "Notes often played by the right hand.",
-        summary: "Use G as your first landmark. Then count up or down.",
-        takeaway: "Find G first. Nearby notes are only a step away.",
+        description: "Learn higher notes from the keyboard upward.",
+        summary: "Start with middle C, connect the staff to the keyboard, then use G as your reading landmark.",
+        takeaway: "Find middle C on the keyboard, locate G on the second staff line, and count by letter from either landmark.",
         sections: [
             {
+                title: "What the treble clef shows",
+                text: "A staff has five lines and four spaces. The treble clef is normally used for notes around middle C and higher.",
+                visual: { type: "notes", clef: "treble", notes: ["c4", "g4", "c5"], caption: "Notes rise as they move higher on the staff" }
+            },
+            {
+                title: "Find middle C on the keyboard",
+                text: "Black keys repeat in groups of two and three. Find the group of two nearest the centre of the piano: middle C is the white key immediately to its left.",
+                visual: { type: "keyboard", caption: "Every white and black key has a note name" }
+            },
+            {
+                title: "Middle C on the staff",
+                text: "In treble clef, middle C is written on a short ledger line below the five staff lines.",
+                visual: { type: "notes", clef: "treble", notes: ["c4"], caption: "C4 — middle C" }
+            },
+            {
+                title: "Follow the musical alphabet",
+                text: "The white keys repeat A, B, C, D, E, F, G. Moving one white key to the right moves to the next letter; after G, the pattern begins again at A.",
+                chips: [["A B C D E F G", "White-key note names"], ["♯ / ♭", "Black keys use sharp or flat names"]]
+            },
+            {
                 title: "The G landmark",
-                text: "The clef curls around the second line. That line is G.",
-                visual: {
-                    type: "notes",
-                    clef: "treble",
-                    notes: ["g4"],
-                    caption: "G4 — second line"
-                }
+                text: "The treble-clef spiral circles the second line from the bottom. A note on that line is G4, the G above middle C.",
+                visual: { type: "notes", clef: "treble", notes: ["g4"], caption: "G4 — second line" }
             },
             {
                 title: "Lines",
-                text: "From bottom to top: E, G, B, D, F.",
-                visual: { type: "notes", clef: "treble", notes: ["e4", "g4", "b4", "d5", "f5"], caption: "E G B D F — notes on the lines" },
-                chips: [["E  G  B  D  F", "Treble lines"]]
+                text: "The five treble lines, read from bottom to top, are E, G, B, D and F.",
+                visual: { type: "notes", clef: "treble", notes: ["e4", "g4", "b4", "d5", "f5"], caption: "E G B D F — treble lines" },
+                chips: [["E G B D F", "Bottom line to top line"]]
             },
             {
                 title: "Spaces",
-                text: "From bottom to top: F, A, C, E.",
-                visual: { type: "notes", clef: "treble", notes: ["f4", "a4", "c5", "e5"], caption: "F A C E — notes in the spaces" },
-                chips: [["F  A  C  E", "Treble spaces"]]
-            },
-            {
-                title: "Middle C",
-                text: "Middle C sits on a short line below the staff.",
-                visual: {
-                    type: "notes",
-                    clef: "treble",
-                    notes: ["c4"],
-                    caption: "C4 — middle C"
-                }
+                text: "The four treble spaces, read from bottom to top, are F, A, C and E.",
+                visual: { type: "notes", clef: "treble", notes: ["f4", "a4", "c5", "e5"], caption: "F A C E — treble spaces" },
+                chips: [["F A C E", "Bottom space to top space"]]
             },
             {
                 title: "Complete treble range",
-                text: "Read upward from A3 to C6. Each step moves to the next line or space.",
+                text: "The practice keyboard covers A3 through C6. Match each step on the staff to the next white key; sharps are the black keys immediately above those notes.",
                 visual: {
                     type: "range",
                     clef: "treble",
                     notes: ["a3", "b3", "c4", "d4", "e4", "f4", "g4", "a4", "b4", "c5", "d5", "e5", "f5", "g5", "a5", "b5", "c6"],
-                    caption: "A3 → C6"
+                    caption: "A3 → C6 — complete treble practice range"
                 }
             }
         ]
     },
     {
         title: "Bass Clef",
-        description: "Notes often played by the left hand.",
-        summary: "Use F as your first landmark. The two dots point to it.",
-        takeaway: "Find F first. Use it to read the notes around it.",
+        description: "Learn lower notes from the keyboard downward.",
+        summary: "Start with middle C, move left on the keyboard, then use F as your reading landmark.",
+        takeaway: "Bass notes are mainly left of middle C. Find F on the fourth line and count by letter to nearby notes.",
         sections: [
             {
+                title: "What the bass clef shows",
+                text: "A staff has five lines and four spaces. The bass clef is normally used for notes around middle C and lower.",
+                visual: { type: "notes", clef: "bass", notes: ["c4", "f3", "c3"], caption: "Lower notes sit lower on the staff" }
+            },
+            {
+                title: "Find middle C on the keyboard",
+                text: "Find the group of two black keys nearest the centre of the piano. Middle C is the white key immediately to its left. Most bass-clef notes continue to the left of it.",
+                visual: { type: "keyboard", caption: "Move left from middle C to reach lower notes" }
+            },
+            {
+                title: "Middle C on the staff",
+                text: "In bass clef, middle C is written on a short ledger line above the five staff lines.",
+                visual: { type: "notes", clef: "bass", notes: ["c4"], caption: "C4 — middle C" }
+            },
+            {
+                title: "Move down the keyboard",
+                text: "Moving one white key left reverses the musical alphabet: C, B, A, G, F, E, D, C. The same seven letters repeat in every octave.",
+                chips: [["C B A G F E D C", "Move left toward lower notes"], ["♯ / ♭", "Black keys use sharp or flat names"]]
+            },
+            {
                 title: "The F landmark",
-                text: "The two dots surround the fourth line. That line is F.",
-                visual: {
-                    type: "notes",
-                    clef: "bass",
-                    notes: ["f3"],
-                    caption: "F3 — fourth line"
-                }
+                text: "The two dots of the bass clef surround the fourth line from the bottom. A note on that line is F3.",
+                visual: { type: "notes", clef: "bass", notes: ["f3"], caption: "F3 — fourth line" }
             },
             {
                 title: "Lines",
-                text: "From bottom to top: G, B, D, F, A.",
-                visual: { type: "notes", clef: "bass", notes: ["g2", "b2", "d3", "f3", "a3"], caption: "G B D F A — notes on the lines" },
-                chips: [["G  B  D  F  A", "Bass lines"]]
+                text: "The five bass lines, read from bottom to top, are G, B, D, F and A.",
+                visual: { type: "notes", clef: "bass", notes: ["g2", "b2", "d3", "f3", "a3"], caption: "G B D F A — bass lines" },
+                chips: [["G B D F A", "Bottom line to top line"]]
             },
             {
                 title: "Spaces",
-                text: "From bottom to top: A, C, E, G.",
-                visual: { type: "notes", clef: "bass", notes: ["a2", "c3", "e3", "g3"], caption: "A C E G — notes in the spaces" },
-                chips: [["A  C  E  G", "Bass spaces"]]
-            },
-            {
-                title: "Middle C",
-                text: "Middle C sits on a short line above the bass staff.",
-                visual: {
-                    type: "notes",
-                    clef: "bass",
-                    notes: ["c4"],
-                    caption: "C4 — middle C"
-                }
+                text: "The four bass spaces, read from bottom to top, are A, C, E and G.",
+                visual: { type: "notes", clef: "bass", notes: ["a2", "c3", "e3", "g3"], caption: "A C E G — bass spaces" },
+                chips: [["A C E G", "Bottom space to top space"]]
             },
             {
                 title: "Complete bass range",
-                text: "Read upward from C2 to E4. Each step moves to the next line or space.",
+                text: "The practice keyboard covers C2 through E4. Match each staff step to the next white key and use middle C as the point where bass and treble meet.",
                 visual: {
                     type: "range",
                     clef: "bass",
                     notes: ["c2", "d2", "e2", "f2", "g2", "a2", "b2", "c3", "d3", "e3", "f3", "g3", "a3", "b3", "c4", "d4", "e4"],
-                    caption: "C2 → E4"
+                    caption: "C2 → E4 — complete bass practice range"
                 }
             }
         ]
     },
     {
         title: "Rhythm",
-        description: "Note values and matching rests.",
-        summary: "Each note and rest symbol represents a specific length of sound or silence.",
-        takeaway: "Notes create sound. Rests create silence. Their values are counted in the same way.",
+        description: "Understand pulse, note lengths and rests.",
+        summary: "Rhythm organises sound and silence in time. Begin with the pulse, then learn how each symbol divides it.",
+        takeaway: "In 4/4 time, a quarter note receives one beat. Other notes and rests are measured in relation to that beat.",
         sections: [
-            { title: "The beat", text: "The beat is the steady pulse of the music.", chips: [["♩  ♩  ♩  ♩", "Count: 1  2  3  4"]] },
-            { title: "Notes", text: "Learn each note by its proper name.", chips: [["𝅝", "Whole note"], ["𝅗𝅥", "Half note"], ["♩", "Quarter note"], ["♪", "Eighth note"], ["𝅘𝅥𝅯", "Sixteenth note"]] },
-            { title: "Rests", text: "Rests use the same lengths, but represent silence.", chips: [["𝄻", "Whole rest"], ["𝄼", "Half rest"], ["𝄽", "Quarter rest"], ["𝄾", "Eighth rest"], ["𝄿", "Sixteenth rest"]] }
+            {
+                title: "Pulse and beat",
+                text: "The pulse is the steady underlying movement of the music. Each counted pulse is called a beat.",
+                chips: [["♩  ♩  ♩  ♩", "Count evenly: 1 2 3 4"]]
+            },
+            {
+                title: "Measures and bar lines",
+                text: "Bar lines divide music into measures. Each measure contains the number of beats specified by the time signature.",
+                example: "bar line  |  one measure  |  bar line"
+            },
+            {
+                title: "Time signatures",
+                text: "The top number shows how many beats are in each measure. In 4/4, there are four quarter-note beats per measure.",
+                chips: [["4/4", "Four beats"], ["3/4", "Three beats"], ["2/4", "Two beats"]]
+            },
+            {
+                title: "Whole and half notes",
+                text: "In 4/4 time, a whole note lasts four beats and fills the measure. A half note lasts two beats, so two half notes fill the measure.",
+                chips: [["𝅝", "Whole note — 4 beats"], ["𝅗𝅥", "Half note — 2 beats"]]
+            },
+            {
+                title: "Quarter notes",
+                text: "A quarter note lasts one beat in 4/4 time. Four quarter notes fill one measure.",
+                chips: [["♩ ♩ ♩ ♩", "Count: 1 2 3 4"]]
+            },
+            {
+                title: "Eighth notes",
+                text: "An eighth note lasts half a beat. Two eighth notes fit inside one quarter-note beat.",
+                chips: [["♪ + ♪ = ♩", "Count: 1 &"]]
+            },
+            {
+                title: "Sixteenth notes",
+                text: "A sixteenth note lasts one quarter of a beat. Four sixteenth notes fit inside one quarter-note beat.",
+                chips: [["𝅘𝅥𝅯 𝅘𝅥𝅯 𝅘𝅥𝅯 𝅘𝅥𝅯 = ♩", "Count: 1 e & a"]]
+            },
+            {
+                title: "Rests",
+                text: "A rest represents measured silence. Every note value has a rest of exactly the same duration.",
+                chips: [["𝄻", "Whole rest — 4 beats"], ["𝄼", "Half rest — 2 beats"], ["𝄽", "Quarter rest — 1 beat"], ["𝄾", "Eighth rest — ½ beat"], ["𝄿", "Sixteenth rest — ¼ beat"]]
+            },
+            {
+                title: "Dots and ties",
+                text: "A dot adds half of a note's original value. A tie joins two notes of the same pitch so they sound as one continuous note.",
+                chips: [["♩.", "Dotted quarter — 1½ beats"], ["𝅗𝅥 + ♩", "Tied length — 3 beats"]]
+            },
+            {
+                title: "Count before playing",
+                text: "Keep the beat even. Say the count aloud first, then clap or play the rhythm without changing speed.",
+                chips: [["1 2 3 4", "Quarter notes"], ["1 & 2 &", "Eighth notes"], ["1 e & a", "Sixteenth notes"]]
+            }
         ]
     },
     {
         title: "Accidentals",
         description: "Sharps, flats and naturals.",
-        summary: "Accidentals raise, lower or reset a note.",
-        takeaway: "Sharp raises. Flat lowers. Natural cancels.",
+        summary: "Accidentals alter the pitch of a written note by a semitone and normally remain active for that pitch until the end of the measure.",
+        takeaway: "A sharp raises, a flat lowers, and a natural cancels an earlier sharp or flat.",
         sections: [
             {
                 title: "Sharp",
-                text: "A sharp raises a note by one semitone.",
+                text: "A sharp raises the written note by one semitone—the smallest standard step on the piano.",
                 chips: [["♯", "Raise"]]
             },
             {
                 title: "Flat",
-                text: "A flat lowers a note by one semitone.",
+                text: "A flat lowers the written note by one semitone. A black key may therefore have both a sharp name and a flat name.",
                 chips: [["♭", "Lower"]]
             },
             {
                 title: "Natural",
-                text: "A natural cancels a sharp or flat and returns the note to its natural pitch.",
+                text: "A natural cancels a previous sharp or flat and restores the white-key version of that note for the remainder of the measure.",
                 chips: [["♮", "Cancel"]]
             }
         ]
     },
     {
         title: "Key Signatures",
-        description: "All commonly written major key signatures.",
-        summary: "The symbols after the clef show which notes are normally sharp or flat.",
-        takeaway: "Major and minor keys can share the same key signature.",
+        description: "All 15 major and relative minor key signatures.",
+        summary: "A key signature appears after the clef and shows which note names remain sharp or flat throughout the music.",
+        takeaway: "Every major key shares its signature with a relative minor key, although each has a different tonic.",
         sections: [
-            { title: "How they work", text: "A key-signature accidental applies to that note name throughout the music, unless another accidental changes it." },
+            { title: "How key signatures work", text: "Sharps or flats written after the clef apply to that note name in every octave. They remain active until the key signature changes, although a written accidental can temporarily override them." },
+            { title: "Major and relative minor", text: "A major key and its relative minor contain the same notes and use the same key signature. The difference is their tonic—the note that feels like home.", chips: [["C major · A minor", "No sharps or flats"], ["G major · E minor", "One sharp"]] },
             ...[
                 ["C major", "A minor", "C", "No sharps or flats"],
                 ["G major", "E minor", "G", "1 sharp"],
@@ -157,11 +215,11 @@ const courses = [
                 ["G-flat major", "E-flat minor", "Gb", "6 flats"],
                 ["C-flat major", "A-flat minor", "Cb", "7 flats"]
             ].map(([major, minor, key, detail]) => ({
-                title: major,
-                text: `${detail}. It shares this signature with ${minor}.`,
+                title: `${major} / ${minor}`,
+                text: `${detail}. Both keys use this signature, but ${major} centres on its major tonic and ${minor} centres on its minor tonic.`,
                 visual: { type: "key", clef: "treble", key, caption: `${major} · ${minor}` }
             })),
-            { title: "Order", text: "Sharps and flats always appear in the same order.", chips: [["F C G D A E B", "Sharps"], ["B E A D G C F", "Flats"]] }
+            { title: "Order of accidentals", text: "Key-signature sharps and flats are always written in a fixed order. Counting them lets you identify the key.", chips: [["F C G D A E B", "Sharps"], ["B E A D G C F", "Flats"]] }
         ]
     }];
 
@@ -194,7 +252,7 @@ courses.push(
     {
         title: "Dynamics",
         description: "How softly or loudly to play.",
-        summary: "Dynamics use Italian symbols to show volume and changes in volume.",
+        summary: "Dynamic markings indicate the intended level of sound and how that level should change through a phrase.",
         takeaway: "More p means softer. More f means louder.",
         sections: [
             { title: "Soft", text: "Piano means soft.", chips: [["ppp", "Very, very soft"], ["pp", "Very soft"], ["p", "Soft"]] },
@@ -207,7 +265,7 @@ courses.push(
     {
         title: "Music Signs",
         description: "Common symbols used in written music.",
-        summary: "These signs control repetition, articulation, phrasing and timing.",
+        summary: "Music signs provide performance instructions that are not contained in pitch and rhythm alone.",
         takeaway: "Notice each sign before playing the passage.",
         sections: [
             { title: "Repeat", text: "Play the marked section again.", chips: [["𝄆  𝄇", "Repeat signs"]] },
@@ -222,7 +280,7 @@ courses.push(
     {
         title: "Major Scales",
         description: "All 12 major scales.",
-        summary: "Major scales use the pattern: whole, whole, half, whole, whole, whole, half.",
+        summary: "A major scale contains seven different notes before the tonic repeats. Its interval pattern is whole, whole, half, whole, whole, whole, half.",
         takeaway: "Each scale begins and ends on its tonic.",
         sections: majorScaleSpecs.map(([name, key]) => ({
             title: name,
@@ -233,7 +291,7 @@ courses.push(
     {
         title: "Minor Scales",
         description: "All 12 minor scales.",
-        summary: "Minor scales use: whole, half, whole, whole, half, whole, whole.",
+        summary: "The natural minor scale contains seven different notes before the tonic repeats. Its interval pattern is whole, half, whole, whole, half, whole, whole.",
         takeaway: "Each natural minor shares a signature with a relative major key.",
         sections: minorScaleSpecs.map(([name, key]) => ({
             title: name,
@@ -452,7 +510,7 @@ function renderCourseVisuals(course) {
                         <div class="mini-white-keys">
                             ${["C", "D", "E", "F", "G", "A", "B"].map(note => `<span class="mini-white-key${note === "C" || note === "F" ? " landmark" : ""}">${note}</span>`).join("")}
                         </div>
-                        ${[1, 2, 3, 4, 5].map(number => `<span class="mini-black-key black-${number}"></span>`).join("")}
+                        ${["C#", "D#", "F#", "G#", "A#"].map((note, index) => `<span class="mini-black-key black-${index + 1}">${note}</span>`).join("")}
                     </div>
                 `;
                 return;
@@ -491,12 +549,9 @@ function renderCourseVisuals(course) {
                     : "c5/w";
 
                 const voice = score.voice(
-                    score.notes(notes, { clef: visual.clef })
+                    score.notes(notes, { clef: visual.clef }),
+                    { time: hasNotes ? `${visual.notes.length}/4` : "4/4" }
                 );
-
-                // Lesson examples may contain any number of notes.
-                // Non-strict voices keep long ranges and scales renderable.
-                voice.setStrict(false);
 
                 const stave = system
                     .addStave({ voices: [voice] })
