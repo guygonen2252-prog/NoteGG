@@ -333,8 +333,17 @@ let activeExercise = "reading";
 let currentQuestion = null;
 let answerLocked = false;
 let sessionToken = 0;
+let currentScreen = "home";
+const screenHistory = [];
 
-function showScreen(name) {
+function showScreen(name, addToHistory = true) {
+    if (!screens[name]) return;
+
+    if (addToHistory && name !== currentScreen) {
+        screenHistory.push(currentScreen);
+    }
+
+    currentScreen = name;
     sessionToken++;
 
     Object.values(screens).forEach(screen => {
@@ -349,7 +358,7 @@ function showScreen(name) {
         const active =
             section === name ||
             (name === "course" && section === "learn") ||
-            (["setup", "exercise"].includes(name) && section === "practice");
+            (["setup", "scaleSetup", "exercise"].includes(name) && section === "practice");
 
         button.classList.toggle("active", active);
     });
@@ -358,6 +367,11 @@ function showScreen(name) {
         top: 0,
         behavior: "smooth"
     });
+}
+
+function goBack() {
+    const previousScreen = screenHistory.pop() || "home";
+    showScreen(previousScreen, false);
 }
 
 function renderCourseGrid() {
@@ -1182,6 +1196,12 @@ document
     });
 
 document
+    .querySelectorAll("[data-back]")
+    .forEach(button => {
+        button.addEventListener("click", goBack);
+    });
+
+document
     .querySelectorAll(".practice-card")
     .forEach(button => {
         button.addEventListener("click", () => {
@@ -1290,4 +1310,4 @@ document
     });
 
 renderCourseGrid();
-showScreen("home");
+showScreen("home", false);
