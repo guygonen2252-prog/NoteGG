@@ -448,13 +448,16 @@ function openCourse(index) {
                                     <div class="lesson-visual-copy">
                                         <span>${section.visual.caption}</span>
                                         ${Array.isArray(section.visual.notes) ? `
-                                            <button class="visual-play" type="button" data-play-visual="${sectionIndex}">
-                                                <span aria-hidden="true">▶</span> Hear it
+                                            <button class="visual-find" type="button" data-find-visual="${sectionIndex}" aria-expanded="false">
+                                                Find on keyboard
                                             </button>
                                         ` : section.visual.type === "keyboard" ? `
-                                            <small class="visual-hint">Tap a key to hear it</small>
+                                            <small class="visual-hint">Use the groups of two and three black keys as landmarks</small>
                                         ` : ""}
                                     </div>
+                                    ${Array.isArray(section.visual.notes) ? `
+                                        <div class="visual-keyboard-guide hidden" data-keyboard-guide="${sectionIndex}"></div>
+                                    ` : ""}
                                 </div>
                             `
                             : ""
@@ -580,46 +583,126 @@ function playMidiValue(midi, duration = 0.5, startDelay = 0) {
     oscillator.stop(start + duration + 0.03);
 }
 
-function playLessonSequence(visual, wrapper, button) {
-    const midiNotes = visual.notes
-        .map(note => lessonNoteToMidi(note, visual.key || "C"))
-        .filter(note => note !== null);
+const pianoGuideWhiteNotes = [
+    { name: "C", pitch: 0 },
+    { name: "D", pitch: 2 },
+    { name: "E", pitch: 4 },
+    { name: "F", pitch: 5 },
+    { name: "G", pitch: 7 },
+    { name: "A", pitch: 9 },
+    { name: "B", pitch: 11 }
+];
 
-    if (!midiNotes.length) return;
+const pianoGuideBlackNotes = [
+    { name: "C♯ / D♭", audioName: "c#4", pitch: 1 },
+    { name: "D♯ / E♭", audioName: "d#4", pitch: 3 },
+    { name: "F♯ / G♭", audioName: "f#4", pitch: 6 },
+    { name: "G♯ / A♭", audioName: "g#4", pitch: 8 },
+    { name: "A♯ / B♭", audioName: "a#4", pitch: 10 }
+];
 
-    const spacing = midiNotes.length > 10 ? 0.16 : 0.28;
-    midiNotes.forEach((midi, index) => {
-        playMidiValue(midi, Math.max(0.14, spacing * 0.82), index * spacing);
-    });
-
-    wrapper.classList.add("is-playing");
-    button.disabled = true;
-    button.innerHTML = '<span aria-hidden="true">■</span> Playing';
-
-    window.setTimeout(() => {
-        wrapper.classList.remove("is-playing");
-        button.disabled = false;
-        button.innerHTML = '<span aria-hidden="true">▶</span> Hear it';
-    }, (midiNotes.length * spacing + 0.25) * 1000);
+function getVisualPitchClasses(visual) {
+    return new Set(
+        (visual.notes || [])
+            .map(note => lessonNoteToMidi(note, visual.key || "C"))
+            .filter(note => note !== null)
+            .map(note => ((note % 12) + 12) % 12)
+    );
 }
 
-function setupLessonInteractions(course) {
-    document.querySelectorAll("[data-play-visual]").forEach(button => {
-        button.addEventListener("click", () => {
-            const visualIndex = Number(button.dataset.playVisual);
-            const visual = course.sections[visualIndex]?.visual;
-            if (!visual?.notes) return;
-            playLessonSequence(visual, button.closest(".lesson-visual"), button);
-        });
-    });
+function getKeyboardLandmark(visual) {
+    const notes = visual.notes || [];
+    if (notes.length !== 1) {
+        return "Highlighted keys match the notes in this example. The pattern repeats across the piano.";
+    }
 
-    document.querySelectorAll("[data-demo-note]").forEach(key => {
+    const midi = lessonNoteToMidi(notes[0], visual.key || "C");
+    if (midi === null) return "Use the groups of two and three black keys to find your position.";
+
+    const pitch = ((midi % 12) + 12) % 12;
+    const landmarks = {
+        0: "C is immediately left of a group of two black keys.",
+        1: "C♯ / D♭ is the left black key in a group of two.",
+        2: "D sits between the two black keys.",
+        3: "D♯ / E♭ is the right black key in a group of two.",
+        4: "E is immediately right of a group of two black keys.",
+        5: "F is immediately left of a group of three black keys.",
+        6: "F♯ / G♭ is the first black key in a group of three.",
+        7: "G sits between the first and second black keys in a group of three.",
+        8: "G♯ / A♭ is the middle black key in a group of three.",
+        9: "A sits between the second and third black keys in a group of three.",
+        10: "A♯ / B♭ is the last black key in a group of three.",
+        11: "B is immediately right of a group of three black keys."
+    };
+
+    return landmarks[pitch];
+}
+
+function buildKeyboardGuide(visual) {
+    const targets = getVisualPitchClasses(visual);
+
+    return `
+        <div class="keyboard-guide-heading">
+            <strong>Keyboard position</strong>
+            <span>${getKeyboardLandmark(visual)}</span>
+        </div>
+        <div class="mini-keyboard piano-guide-keyboard" aria-label="Piano guide with highlighted notes">
+            <div class="mini-white-keys">
+                ${pianoGuideWhiteNotes.map(note => `
+                    <button
+                        type="button"
+                        class="mini-white-key${targets.has(note.pitch) ? " is-guide-target" : ""}"
+                        data-demo-note="${note.name.toLowerCase()}4"
+                        aria-label="Play ${note.name}${targets.has(note.pitch) ? ", highlighted" : ""}"
+                    >${note.name}</button>
+                `).join("")}
+            </div>
+            ${pianoGuideBlackNotes.map((note, index) => `
+                <button
+                    type="button"
+                    class="mini-black-key black-${index + 1}${targets.has(note.pitch) ? " is-guide-target" : ""}"
+                    data-demo-note="${note.audioName}"
+                    aria-label="Play ${note.name}${targets.has(note.pitch) ? ", highlighted" : ""}"
+                >${note.name}</button>
+            `).join("")}
+        </div>
+        <small class="visual-hint">Highlighted keys match the notation. Tap a key to hear its pitch.</small>
+    `;
+}
+
+function bindDemoKeys(scope = document) {
+    scope.querySelectorAll("[data-demo-note]").forEach(key => {
+        if (key.dataset.audioReady === "true") return;
+        key.dataset.audioReady = "true";
         key.addEventListener("click", () => {
             playMidiValue(lessonNoteToMidi(key.dataset.demoNote), 0.55);
             key.classList.add("is-active");
             window.setTimeout(() => key.classList.remove("is-active"), 180);
         });
     });
+}
+
+function setupLessonInteractions(course) {
+    document.querySelectorAll("[data-find-visual]").forEach(button => {
+        button.addEventListener("click", () => {
+            const visualIndex = Number(button.dataset.findVisual);
+            const visual = course.sections[visualIndex]?.visual;
+            const guide = document.querySelector(`[data-keyboard-guide="${visualIndex}"]`);
+            if (!visual?.notes || !guide) return;
+
+            const willOpen = guide.classList.contains("hidden");
+            if (willOpen && !guide.innerHTML) {
+                guide.innerHTML = buildKeyboardGuide(visual);
+                bindDemoKeys(guide);
+            }
+
+            guide.classList.toggle("hidden", !willOpen);
+            button.setAttribute("aria-expanded", String(willOpen));
+            button.textContent = willOpen ? "Hide keyboard" : "Find on keyboard";
+        });
+    });
+
+    bindDemoKeys();
 }
 
 function renderCourseVisuals(course) {
