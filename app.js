@@ -408,6 +408,129 @@ function renderCourseGrid() {
     });
 }
 
+const lessonMemoryPairs = {
+    "Treble Clef": [["G landmark", "Second line"], ["F A C E", "Spaces"], ["E G B D F", "Lines"]],
+    "Bass Clef": [["F landmark", "Fourth line"], ["A C E G", "Spaces"], ["G B D F A", "Lines"]],
+    "Rhythm": [["Quarter note", "1 beat"], ["Half note", "2 beats"], ["Whole note", "4 beats"]],
+    "Accidentals": [["Sharp", "Raises"], ["Flat", "Lowers"], ["Natural", "Cancels"]],
+    "Key Signatures": [["C major", "No sharps or flats"], ["G major", "1 sharp"], ["F major", "1 flat"]],
+    "Dynamics": [["p", "Soft"], ["f", "Loud"], ["Crescendo", "Gradually louder"]],
+    "Music Signs": [["Fermata", "Hold"], ["Repeat sign", "Play again"], ["Staccato", "Short"]],
+    "Major Scales": [["C major", "No sharps or flats"], ["G major", "F sharp"], ["F major", "B flat"]],
+    "Minor Scales": [["A minor", "No sharps or flats"], ["E minor", "F sharp"], ["D minor", "B flat"]]
+};
+
+function renderMemoryGame(course) {
+    if (!lessonMemoryPairs[course.title]) return "";
+
+    return `
+        <section class="memory-game" data-memory-game>
+            <div class="memory-game-header">
+                <div>
+                    <span>MATCHING GAME</span>
+                    <h2>Connect the pairs</h2>
+                </div>
+                <button type="button" class="memory-reset" data-memory-reset>Shuffle</button>
+            </div>
+            <p class="memory-instruction">Choose two cards that belong together.</p>
+            <div class="memory-grid" data-memory-grid></div>
+            <p class="memory-feedback" data-memory-feedback aria-live="polite"></p>
+        </section>
+    `;
+}
+
+function setupMemoryGame(course) {
+    const pairs = lessonMemoryPairs[course.title];
+    const game = document.querySelector("[data-memory-game]");
+    if (!pairs || !game) return;
+
+    const grid = game.querySelector("[data-memory-grid]");
+    const feedback = game.querySelector("[data-memory-feedback]");
+    const resetButton = game.querySelector("[data-memory-reset]");
+    let firstCard = null;
+    let locked = false;
+    let matchedPairs = 0;
+
+    function shuffle(items) {
+        const copy = [...items];
+        for (let index = copy.length - 1; index > 0; index -= 1) {
+            const randomIndex = Math.floor(Math.random() * (index + 1));
+            [copy[index], copy[randomIndex]] = [copy[randomIndex], copy[index]];
+        }
+        return copy;
+    }
+
+    function startGame() {
+        const cards = pairs.flatMap((pair, pairIndex) => [
+            { text: pair[0], pairIndex },
+            { text: pair[1], pairIndex }
+        ]);
+
+        firstCard = null;
+        locked = false;
+        matchedPairs = 0;
+        feedback.textContent = "";
+        grid.innerHTML = shuffle(cards).map(card => `
+            <button
+                type="button"
+                class="memory-card"
+                data-memory-card
+                data-pair-index="${card.pairIndex}"
+            >
+                ${card.text}
+            </button>
+        `).join("");
+
+        grid.querySelectorAll("[data-memory-card]").forEach(card => {
+            card.addEventListener("click", () => {
+                if (locked || card.disabled || card === firstCard) return;
+
+                card.classList.add("selected");
+
+                if (!firstCard) {
+                    firstCard = card;
+                    feedback.textContent = "Choose its match.";
+                    return;
+                }
+
+                const isMatch = firstCard.dataset.pairIndex === card.dataset.pairIndex;
+
+                if (isMatch) {
+                    firstCard.disabled = true;
+                    card.disabled = true;
+                    firstCard.classList.add("matched");
+                    card.classList.add("matched");
+                    firstCard.classList.remove("selected");
+                    card.classList.remove("selected");
+                    firstCard = null;
+                    matchedPairs += 1;
+                    feedback.textContent = matchedPairs === pairs.length
+                        ? "All pairs matched."
+                        : "Match found.";
+                    return;
+                }
+
+                locked = true;
+                feedback.textContent = "Those do not match.";
+                firstCard.classList.add("mismatch");
+                card.classList.add("mismatch");
+
+                const previousCard = firstCard;
+                window.setTimeout(() => {
+                    previousCard.classList.remove("selected", "mismatch");
+                    card.classList.remove("selected", "mismatch");
+                    firstCard = null;
+                    locked = false;
+                    feedback.textContent = "";
+                }, 650);
+            });
+        });
+    }
+
+    resetButton.addEventListener("click", startGame);
+    startGame();
+}
+
 const lessonChallenges = {
     "Treble Clef": [
         { question: "Which line does the treble clef curl around?", choices: ["C", "F", "G"], answer: 2 },
@@ -612,7 +735,7 @@ function openCourse(index) {
                     }
                 </div>
             </section>
-        `).join("") + renderLessonChallenge(course);
+        `).join("") + renderMemoryGame(course) + renderLessonChallenge(course);
 
     const previous = document.getElementById("previous-course");
     const next = document.getElementById("next-course");
@@ -630,6 +753,7 @@ function openCourse(index) {
     requestAnimationFrame(() => {
         renderCourseVisuals(course);
         setupLessonInteractions(course);
+        setupMemoryGame(course);
         setupLessonChallenge(course);
     });
 }
