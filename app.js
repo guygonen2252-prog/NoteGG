@@ -445,7 +445,16 @@ function openCourse(index) {
                                     data-visual-index="${sectionIndex}"
                                 >
                                     <div class="lesson-staff"></div>
-                                    <span>${section.visual.caption}</span>
+                                    <div class="lesson-visual-copy">
+                                        <span>${section.visual.caption}</span>
+                                        ${Array.isArray(section.visual.notes) ? `
+                                            <button class="visual-play" type="button" data-play-visual="${sectionIndex}">
+                                                <span aria-hidden="true">▶</span> Hear it
+                                            </button>
+                                        ` : section.visual.type === "keyboard" ? `
+                                            <small class="visual-hint">Tap a key to hear it</small>
+                                        ` : ""}
+                                    </div>
                                 </div>
                             `
                             : ""
@@ -464,7 +473,7 @@ function openCourse(index) {
                     ${
                         section.chips
                             ? `
-                                <div class="symbol-line">
+                                <div class="symbol-line${course.title === "Rhythm" ? " rhythm-symbol-line" : ""}">
                                     ${section.chips.map(chip => `
                                         <div class="symbol-chip">
                                             <strong>${chip[0]}</strong>
@@ -494,6 +503,122 @@ function openCourse(index) {
 
     requestAnimationFrame(() => {
         renderCourseVisuals(course);
+        setupLessonInteractions(course);
+    });
+}
+
+let lessonAudioContext = null;
+
+const keySignatureAccidentals = {
+    C: {},
+    G: { F: 1 },
+    D: { F: 1, C: 1 },
+    A: { F: 1, C: 1, G: 1 },
+    E: { F: 1, C: 1, G: 1, D: 1 },
+    B: { F: 1, C: 1, G: 1, D: 1, A: 1 },
+    "F#": { F: 1, C: 1, G: 1, D: 1, A: 1, E: 1 },
+    "C#": { F: 1, C: 1, G: 1, D: 1, A: 1, E: 1, B: 1 },
+    F: { B: -1 },
+    Bb: { B: -1, E: -1 },
+    Eb: { B: -1, E: -1, A: -1 },
+    Ab: { B: -1, E: -1, A: -1, D: -1 },
+    Db: { B: -1, E: -1, A: -1, D: -1, G: -1 },
+    Gb: { B: -1, E: -1, A: -1, D: -1, G: -1, C: -1 },
+    Cb: { B: -1, E: -1, A: -1, D: -1, G: -1, C: -1, F: -1 }
+};
+
+function lessonNoteToMidi(note, keySignature = "C") {
+    const match = /^([a-g])([#b]?)(-?\d+)$/i.exec(note);
+    if (!match) return null;
+
+    const letter = match[1].toUpperCase();
+    const explicitAccidental = match[2];
+    const octave = Number(match[3]);
+    const naturalPitch = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[letter];
+    const accidental = explicitAccidental === "#"
+        ? 1
+        : explicitAccidental === "b"
+            ? -1
+            : (keySignatureAccidentals[keySignature]?.[letter] || 0);
+
+    return (octave + 1) * 12 + naturalPitch + accidental;
+}
+
+function getLessonAudioContext() {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return null;
+
+    if (!lessonAudioContext) {
+        lessonAudioContext = new AudioContextClass();
+    }
+
+    if (lessonAudioContext.state === "suspended") {
+        lessonAudioContext.resume();
+    }
+
+    return lessonAudioContext;
+}
+
+function playMidiValue(midi, duration = 0.5, startDelay = 0) {
+    const context = getLessonAudioContext();
+    if (!context || midi === null) return;
+
+    const start = context.currentTime + startDelay;
+    const frequency = 440 * Math.pow(2, (midi - 69) / 12);
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+
+    oscillator.type = "triangle";
+    oscillator.frequency.setValueAtTime(frequency, start);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.16, start + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(start);
+    oscillator.stop(start + duration + 0.03);
+}
+
+function playLessonSequence(visual, wrapper, button) {
+    const midiNotes = visual.notes
+        .map(note => lessonNoteToMidi(note, visual.key || "C"))
+        .filter(note => note !== null);
+
+    if (!midiNotes.length) return;
+
+    const spacing = midiNotes.length > 10 ? 0.16 : 0.28;
+    midiNotes.forEach((midi, index) => {
+        playMidiValue(midi, Math.max(0.14, spacing * 0.82), index * spacing);
+    });
+
+    wrapper.classList.add("is-playing");
+    button.disabled = true;
+    button.innerHTML = '<span aria-hidden="true">■</span> Playing';
+
+    window.setTimeout(() => {
+        wrapper.classList.remove("is-playing");
+        button.disabled = false;
+        button.innerHTML = '<span aria-hidden="true">▶</span> Hear it';
+    }, (midiNotes.length * spacing + 0.25) * 1000);
+}
+
+function setupLessonInteractions(course) {
+    document.querySelectorAll("[data-play-visual]").forEach(button => {
+        button.addEventListener("click", () => {
+            const visualIndex = Number(button.dataset.playVisual);
+            const visual = course.sections[visualIndex]?.visual;
+            if (!visual?.notes) return;
+            playLessonSequence(visual, button.closest(".lesson-visual"), button);
+        });
+    });
+
+    document.querySelectorAll("[data-demo-note]").forEach(key => {
+        key.addEventListener("click", () => {
+            playMidiValue(lessonNoteToMidi(key.dataset.demoNote), 0.55);
+            key.classList.add("is-active");
+            window.setTimeout(() => key.classList.remove("is-active"), 180);
+        });
     });
 }
 
@@ -520,11 +645,11 @@ function renderCourseVisuals(course) {
 
             if (visual.type === "keyboard") {
                 target.innerHTML = `
-                    <div class="mini-keyboard" aria-label="Piano keyboard landmarks">
+                    <div class="mini-keyboard" aria-label="Interactive piano keyboard">
                         <div class="mini-white-keys">
-                            ${["C", "D", "E", "F", "G", "A", "B"].map(note => `<span class="mini-white-key${note === "C" || note === "F" ? " landmark" : ""}">${note}</span>`).join("")}
+                            ${["C", "D", "E", "F", "G", "A", "B"].map(note => `<button type="button" class="mini-white-key${note === "C" || note === "F" ? " landmark" : ""}" data-demo-note="${note.toLowerCase()}4" aria-label="Play ${note}">${note}</button>`).join("")}
                         </div>
-                        ${["C#", "D#", "F#", "G#", "A#"].map((note, index) => `<span class="mini-black-key black-${index + 1}">${note}</span>`).join("")}
+                        ${["C#", "D#", "F#", "G#", "A#"].map((note, index) => `<button type="button" class="mini-black-key black-${index + 1}" data-demo-note="${note.toLowerCase()}4" aria-label="Play ${note}">${note}</button>`).join("")}
                     </div>
                 `;
                 return;
@@ -739,6 +864,7 @@ function renderKeyboard(startMidi, endMidi, onSelect, labeler = item => item.not
         );
 
         key.addEventListener("click", () => {
+            playMidiValue(item.midi, 0.42);
             onSelect(item, key);
         });
 
@@ -814,6 +940,7 @@ function renderKeyboard(startMidi, endMidi, onSelect, labeler = item => item.not
                 `${blackWidth}%`;
 
             key.addEventListener("click", () => {
+                playMidiValue(sharp.midi, 0.42);
                 onSelect(sharp, key);
             });
 
