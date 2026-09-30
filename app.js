@@ -408,6 +408,129 @@ function renderCourseGrid() {
     });
 }
 
+const lessonChallenges = {
+    "Treble Clef": [
+        { question: "Which line does the treble clef curl around?", choices: ["C", "F", "G"], answer: 2 },
+        { question: "Where is middle C in treble clef?", choices: ["Below the staff", "On the top line", "Inside the staff"], answer: 0 },
+        { question: "Which letters are used for white-key notes?", choices: ["A to G", "A to Z", "C to B only"], answer: 0 }
+    ],
+    "Bass Clef": [
+        { question: "Which line sits between the bass-clef dots?", choices: ["F", "G", "C"], answer: 0 },
+        { question: "Where is middle C in bass clef?", choices: ["Above the staff", "On the bottom line", "Below the staff"], answer: 0 },
+        { question: "Which are the bass-clef line notes?", choices: ["G B D F A", "E G B D F", "F A C E"], answer: 0 }
+    ],
+    "Rhythm": [
+        { question: "How long is a quarter note in 4/4?", choices: ["1 beat", "2 beats", "4 beats"], answer: 0 },
+        { question: "How long is a half note in 4/4?", choices: ["1 beat", "2 beats", "Half a beat"], answer: 1 },
+        { question: "Four sixteenth notes equal:", choices: ["One quarter note", "One half note", "Two whole notes"], answer: 0 }
+    ],
+    "Accidentals": [
+        { question: "What does a sharp do?", choices: ["Raises a note", "Lowers a note", "Silences a note"], answer: 0 },
+        { question: "What does a flat do?", choices: ["Raises a note", "Lowers a note", "Repeats a note"], answer: 1 },
+        { question: "What does a natural sign do?", choices: ["Cancels a sharp or flat", "Makes a note longer", "Makes a note louder"], answer: 0 }
+    ],
+    "Key Signatures": [
+        { question: "Where is a key signature written?", choices: ["After the clef", "At the end only", "Under the staff"], answer: 0 },
+        { question: "How long does a key signature apply?", choices: ["Until it changes", "For one note", "For one measure only"], answer: 0 },
+        { question: "Which pair has no sharps or flats?", choices: ["C major and A minor", "G major and E minor", "D major and B minor"], answer: 0 }
+    ],
+    "Dynamics": [
+        { question: "What does p mean?", choices: ["Soft", "Loud", "Fast"], answer: 0 },
+        { question: "What does f mean?", choices: ["Loud", "Soft", "Slow"], answer: 0 },
+        { question: "What does crescendo mean?", choices: ["Gradually louder", "Gradually softer", "Suddenly stop"], answer: 0 }
+    ],
+    "Music Signs": [
+        { question: "What does a fermata mean?", choices: ["Hold the note", "Play very short", "Repeat from the start"], answer: 0 },
+        { question: "What does a repeat sign mean?", choices: ["Play the section again", "Skip the section", "Play one octave higher"], answer: 0 },
+        { question: "What does staccato mean?", choices: ["Short and detached", "Smooth and connected", "Very loud"], answer: 0 }
+    ],
+    "Major Scales": [
+        { question: "What is the major-scale step pattern?", choices: ["W W H W W W H", "W H W W H W W", "H W W H W W W"], answer: 0 },
+        { question: "Which major scale has no sharps or flats?", choices: ["C major", "G major", "F major"], answer: 0 },
+        { question: "A scale begins and ends on its:", choices: ["Tonic", "Dominant", "Leading note"], answer: 0 }
+    ],
+    "Minor Scales": [
+        { question: "What is the minor-scale step pattern taught here?", choices: ["W H W W H W W", "W W H W W W H", "H W W W H W W"], answer: 0 },
+        { question: "Which minor scale has no sharps or flats?", choices: ["A minor", "E minor", "D minor"], answer: 0 },
+        { question: "A scale begins and ends on its:", choices: ["Tonic", "Third", "Fifth"], answer: 0 }
+    ]
+};
+
+function renderLessonChallenge(course) {
+    if (!lessonChallenges[course.title]) return "";
+
+    return `
+        <section class="lesson-challenge" data-lesson-challenge>
+            <div class="challenge-topline">
+                <span>QUICK CHALLENGE</span>
+                <span data-challenge-progress>1 / 3</span>
+            </div>
+            <h2 data-challenge-question></h2>
+            <div class="challenge-choices" data-challenge-choices></div>
+            <p class="challenge-feedback" data-challenge-feedback aria-live="polite"></p>
+            <button class="challenge-next hidden" type="button" data-challenge-next>Next</button>
+        </section>
+    `;
+}
+
+function setupLessonChallenge(course) {
+    const questions = lessonChallenges[course.title];
+    const challenge = document.querySelector("[data-lesson-challenge]");
+    if (!questions || !challenge) return;
+
+    const progress = challenge.querySelector("[data-challenge-progress]");
+    const questionText = challenge.querySelector("[data-challenge-question]");
+    const choices = challenge.querySelector("[data-challenge-choices]");
+    const feedback = challenge.querySelector("[data-challenge-feedback]");
+    const nextButton = challenge.querySelector("[data-challenge-next]");
+    let questionIndex = 0;
+
+    function renderQuestion() {
+        const current = questions[questionIndex];
+        progress.textContent = `${questionIndex + 1} / ${questions.length}`;
+        questionText.textContent = current.question;
+        feedback.textContent = "";
+        feedback.className = "challenge-feedback";
+        nextButton.classList.add("hidden");
+        choices.innerHTML = current.choices.map((choice, choiceIndex) => `
+            <button type="button" class="challenge-choice" data-choice-index="${choiceIndex}">
+                ${choice}
+            </button>
+        `).join("");
+
+        choices.querySelectorAll("[data-choice-index]").forEach(button => {
+            button.addEventListener("click", () => {
+                const selectedIndex = Number(button.dataset.choiceIndex);
+                const isCorrect = selectedIndex === current.answer;
+                const allChoices = choices.querySelectorAll("[data-choice-index]");
+
+                allChoices.forEach((choiceButton, index) => {
+                    choiceButton.disabled = true;
+                    if (index === current.answer) choiceButton.classList.add("correct");
+                });
+
+                if (!isCorrect) button.classList.add("wrong");
+
+                feedback.textContent = isCorrect
+                    ? "Correct."
+                    : `The answer is ${current.choices[current.answer]}.`;
+                feedback.classList.add(isCorrect ? "correct" : "wrong");
+                nextButton.textContent = questionIndex === questions.length - 1
+                    ? "Play again"
+                    : "Next";
+                nextButton.classList.remove("hidden");
+            });
+        });
+    }
+
+    nextButton.addEventListener("click", () => {
+        questionIndex = (questionIndex + 1) % questions.length;
+        renderQuestion();
+    });
+
+    renderQuestion();
+}
+
 function openCourse(index) {
     selectedCourseIndex = index;
 
@@ -489,7 +612,7 @@ function openCourse(index) {
                     }
                 </div>
             </section>
-        `).join("");
+        `).join("") + renderLessonChallenge(course);
 
     const previous = document.getElementById("previous-course");
     const next = document.getElementById("next-course");
@@ -507,6 +630,7 @@ function openCourse(index) {
     requestAnimationFrame(() => {
         renderCourseVisuals(course);
         setupLessonInteractions(course);
+        setupLessonChallenge(course);
     });
 }
 
