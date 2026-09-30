@@ -447,15 +447,15 @@ function openCourse(index) {
                                     <div class="lesson-staff"></div>
                                     <div class="lesson-visual-copy">
                                         <span>${section.visual.caption}</span>
-                                        ${Array.isArray(section.visual.notes) ? `
+                                        ${Array.isArray(section.visual.notes) && section.visual.notes.length === 1 ? `
                                             <button class="visual-find" type="button" data-find-visual="${sectionIndex}" aria-expanded="false">
-                                                Find on keyboard
+                                                Find this note
                                             </button>
                                         ` : section.visual.type === "keyboard" ? `
                                             <small class="visual-hint">Use the groups of two and three black keys as landmarks</small>
                                         ` : ""}
                                     </div>
-                                    ${Array.isArray(section.visual.notes) ? `
+                                    ${Array.isArray(section.visual.notes) && section.visual.notes.length === 1 ? `
                                         <div class="visual-keyboard-guide hidden" data-keyboard-guide="${sectionIndex}"></div>
                                     ` : ""}
                                 </div>
@@ -601,34 +601,68 @@ const pianoGuideBlackNotes = [
     { audioName: "a#4" }
 ];
 
-function buildKeyboardGuide() {
+function buildKeyboardGuide(visual) {
+    const targetMidi = lessonNoteToMidi(visual.notes[0], visual.key || "C");
+    const targetPitch = targetMidi === null ? -1 : ((targetMidi % 12) + 12) % 12;
+
     return `
         <div class="keyboard-guide-heading">
-            <strong>Keyboard map</strong>
-            <span>Use the groups of two and three black keys to find your position.</span>
+            <strong>Choose the matching key</strong>
+            <span>Octave numbers are ignored in this one-octave exercise.</span>
         </div>
-        <div class="mini-keyboard piano-guide-keyboard" aria-label="Piano keyboard reference">
+        <div class="mini-keyboard piano-guide-keyboard" aria-label="Choose the matching key">
             <div class="mini-white-keys">
                 ${pianoGuideWhiteNotes.map(note => `
                     <button
                         type="button"
                         class="mini-white-key"
                         data-demo-note="${note.name.toLowerCase()}4"
-                        aria-label="Play ${note.name}"
+                        data-guide-pitch="${note.pitch}"
+                        data-guide-answer="${targetPitch}"
+                        aria-label="Choose ${note.name}"
                     >${note.name}</button>
                 `).join("")}
             </div>
-            ${pianoGuideBlackNotes.map((note, index) => `
-                <button
-                    type="button"
-                    class="mini-black-key black-${index + 1}"
-                    data-demo-note="${note.audioName}"
-                    aria-label="Play black key"
-                ></button>
-            `).join("")}
+            ${pianoGuideBlackNotes.map((note, index) => {
+                const blackPitches = [1, 3, 6, 8, 10];
+                return `
+                    <button
+                        type="button"
+                        class="mini-black-key black-${index + 1}"
+                        data-demo-note="${note.audioName}"
+                        data-guide-pitch="${blackPitches[index]}"
+                        data-guide-answer="${targetPitch}"
+                        aria-label="Choose black key"
+                    ></button>
+                `;
+            }).join("")}
         </div>
-        <small class="visual-hint">White-key names repeat from A to G across the piano.</small>
+        <p class="keyboard-guide-feedback" data-keyboard-feedback aria-live="polite">
+            Select the key that matches the note on the staff.
+        </p>
+        <small class="visual-hint">The same note names repeat in every octave.</small>
     `;
+}
+
+function bindKeyboardQuiz(scope) {
+    const feedback = scope.querySelector("[data-keyboard-feedback]");
+
+    scope.querySelectorAll("[data-guide-pitch]").forEach(key => {
+        key.addEventListener("click", () => {
+            const isCorrect = Number(key.dataset.guidePitch) === Number(key.dataset.guideAnswer);
+
+            scope.querySelectorAll("[data-guide-pitch]").forEach(item => {
+                item.classList.remove("quiz-correct", "quiz-wrong");
+            });
+
+            key.classList.add(isCorrect ? "quiz-correct" : "quiz-wrong");
+            feedback.textContent = isCorrect
+                ? "Correct. This note name repeats in every octave."
+                : "Not this one. Try another key.";
+            feedback.classList.toggle("correct", isCorrect);
+            feedback.classList.toggle("wrong", !isCorrect);
+        });
+    });
 }
 
 function bindDemoKeys(scope = document) {
@@ -653,13 +687,14 @@ function setupLessonInteractions(course) {
 
             const willOpen = guide.classList.contains("hidden");
             if (willOpen && !guide.innerHTML) {
-                guide.innerHTML = buildKeyboardGuide();
+                guide.innerHTML = buildKeyboardGuide(visual);
                 bindDemoKeys(guide);
+                bindKeyboardQuiz(guide);
             }
 
             guide.classList.toggle("hidden", !willOpen);
             button.setAttribute("aria-expanded", String(willOpen));
-            button.textContent = willOpen ? "Hide keyboard" : "Find on keyboard";
+            button.textContent = willOpen ? "Hide keyboard" : "Find this note";
         });
     });
 
@@ -693,7 +728,7 @@ function renderCourseVisuals(course) {
                         <div class="mini-white-keys">
                             ${["C", "D", "E", "F", "G", "A", "B"].map(note => `<button type="button" class="mini-white-key${note === "C" || note === "F" ? " landmark" : ""}" data-demo-note="${note.toLowerCase()}4" aria-label="Play ${note}">${note}</button>`).join("")}
                         </div>
-                        ${["C#", "D#", "F#", "G#", "A#"].map((note, index) => `<button type="button" class="mini-black-key black-${index + 1}" data-demo-note="${note.toLowerCase()}4" aria-label="Play ${note}">${note}</button>`).join("")}
+                        ${["c#4", "d#4", "f#4", "g#4", "a#4"].map((note, index) => `<button type="button" class="mini-black-key black-${index + 1}" data-demo-note="${note}" aria-label="Play black key"></button>`).join("")}
                     </div>
                 `;
                 return;
