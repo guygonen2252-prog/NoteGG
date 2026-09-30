@@ -1379,3 +1379,50 @@ h1 {
         height: 108px;
     }
 }
+
+
+/* Keep multi-note rhythm examples compact and horizontal */
+.rhythm-sequence {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-auto-columns: 30px;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    max-width: 100%;
+    gap: 5px;
+}
+
+.rhythm-sequence .rhythm-svg {
+    display: block !important;
+    width: 30px !important;
+    height: 52px !important;
+    min-width: 0;
+}
+
+.rhythm-symbol-line .symbol-chip:has(.rhythm-sequence) {
+    min-width: 190px;
+    overflow-x: auto;
+}
+
+.rhythm-symbol-line .symbol-chip:has(.rhythm-sequence) strong {
+    min-height: 58px;
+    overflow: visible;
+}
+
+@media (max-width: 620px) {
+    .rhythm-sequence {
+        grid-auto-columns: 24px;
+        gap: 2px;
+    }
+
+    .rhythm-sequence .rhythm-svg {
+        width: 24px !important;
+        height: 44px !important;
+    }
+
+    .rhythm-symbol-line .symbol-chip:has(.rhythm-sequence) {
+        width: 100%;
+        min-width: 0;
+    }
+}
