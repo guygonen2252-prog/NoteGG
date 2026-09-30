@@ -722,3 +722,102 @@ h1 {
         min-height: 46px;
     }
 }
+
+
+/* Piano navigation guides */
+.visual-find {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 9px 15px;
+    border: 1px solid rgba(164, 122, 53, 0.38);
+    border-radius: 999px;
+    background: var(--gold-soft);
+    color: var(--navy);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.visual-find:hover {
+    background: var(--gold);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.visual-keyboard-guide {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    animation: guideReveal 220ms ease both;
+}
+
+.keyboard-guide-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+.keyboard-guide-heading strong {
+    color: var(--navy);
+    font-size: 0.95rem;
+}
+
+.keyboard-guide-heading span {
+    color: var(--muted);
+    font-size: 0.86rem;
+}
+
+.piano-guide-keyboard {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.mini-white-key.is-guide-target {
+    background: var(--gold-soft);
+    color: var(--navy);
+    box-shadow: inset 0 -5px 0 var(--gold);
+    font-weight: 700;
+}
+
+.mini-black-key.is-guide-target {
+    background: var(--gold);
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(164, 122, 53, 0.24);
+}
+
+@keyframes guideReveal {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 620px) {
+    .keyboard-guide-heading {
+        display: block;
+        text-align: center;
+    }
+
+    .keyboard-guide-heading span {
+        display: block;
+        margin-top: 4px;
+    }
+
+    .visual-find {
+        width: 100%;
+        min-height: 46px;
+    }
+
+    .piano-guide-keyboard {
+        width: 100%;
+    }
+
+    .piano-guide-keyboard .mini-black-key {
+        font-size: 0.5rem;
+        line-height: 1.1;
+    }
+}
