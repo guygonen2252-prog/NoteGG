@@ -408,6 +408,176 @@ function renderCourseGrid() {
     });
 }
 
+const courseMotionDemos = {
+    "Rhythm": {
+        type: "rhythm",
+        title: "Quarter-note pulse",
+        description: "Four evenly spaced quarter notes."
+    },
+    "Dynamics": {
+        type: "dynamics",
+        title: "Soft to loud",
+        description: "Hear and see a gradual crescendo."
+    },
+    "Major Scales": {
+        type: "scale",
+        title: "C major in motion",
+        description: "Watch one octave rise and return to C.",
+        notes: [60, 62, 64, 65, 67, 69, 71, 72]
+    },
+    "Minor Scales": {
+        type: "scale",
+        title: "A minor in motion",
+        description: "Watch one octave rise and return to A.",
+        notes: [57, 59, 60, 62, 64, 65, 67, 69]
+    }
+};
+
+function renderCourseMotionDemo(course) {
+    const demo = courseMotionDemos[course.title];
+    if (!demo) return "";
+
+    let visual = "";
+
+    if (demo.type === "rhythm") {
+        visual = `
+            <div class="motion-rhythm" aria-label="Four quarter notes">
+                ${[1, 2, 3, 4].map(count => `
+                    <div class="motion-beat" data-motion-step>
+                        <strong>♩</strong>
+                        <span>${count}</span>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    }
+
+    if (demo.type === "dynamics") {
+        visual = `
+            <div class="motion-dynamics" aria-label="Crescendo from soft to loud">
+                <span class="motion-dynamic-label">p</span>
+                <div class="motion-dynamic-bars">
+                    ${[1, 2, 3, 4, 5].map(level => `
+                        <span style="--dynamic-level: ${level}" data-motion-step></span>
+                    `).join("")}
+                </div>
+                <span class="motion-dynamic-label">f</span>
+            </div>
+        `;
+    }
+
+    if (demo.type === "scale") {
+        visual = `
+            <div class="motion-scale-keyboard" aria-label="One-octave scale demonstration">
+                ${[
+                    ["C", 0], ["D", 2], ["E", 4], ["F", 5],
+                    ["G", 7], ["A", 9], ["B", 11]
+                ].map(([name, pitch]) => `
+                    <div class="motion-scale-key" data-motion-pitch="${pitch}">
+                        ${name}
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    }
+
+    return `
+        <section class="motion-demo" data-motion-demo data-motion-type="${demo.type}">
+            <div class="motion-demo-copy">
+                <span>ANIMATED DEMONSTRATION</span>
+                <h2>${demo.title}</h2>
+                <p>${demo.description}</p>
+            </div>
+            <div class="motion-demo-stage">
+                ${visual}
+            </div>
+            <button class="motion-demo-play" type="button" data-motion-play>
+                Play demonstration
+            </button>
+        </section>
+    `;
+}
+
+let motionDemoTimers = [];
+
+function stopCourseMotionDemo() {
+    motionDemoTimers.forEach(timer => window.clearTimeout(timer));
+    motionDemoTimers = [];
+}
+
+function scheduleMotionStep(callback, delay) {
+    const timer = window.setTimeout(callback, delay);
+    motionDemoTimers.push(timer);
+}
+
+function setupCourseMotionDemo(course) {
+    stopCourseMotionDemo();
+
+    const settings = courseMotionDemos[course.title];
+    const demo = document.querySelector("[data-motion-demo]");
+    if (!settings || !demo) return;
+
+    const playButton = demo.querySelector("[data-motion-play]");
+
+    playButton.addEventListener("click", () => {
+        stopCourseMotionDemo();
+        demo.querySelectorAll(".active").forEach(item => item.classList.remove("active"));
+        playButton.disabled = true;
+        playButton.textContent = "Playing";
+
+        if (settings.type === "rhythm") {
+            const beats = [...demo.querySelectorAll("[data-motion-step]")];
+            beats.forEach((beat, index) => {
+                scheduleMotionStep(() => {
+                    beats.forEach(item => item.classList.remove("active"));
+                    beat.classList.add("active");
+                    playMidiValue(84, 0.09, 0, 0.1);
+                }, index * 520);
+            });
+
+            scheduleMotionStep(() => {
+                beats.forEach(item => item.classList.remove("active"));
+                playButton.disabled = false;
+                playButton.textContent = "Play again";
+            }, beats.length * 520 + 180);
+        }
+
+        if (settings.type === "dynamics") {
+            const bars = [...demo.querySelectorAll("[data-motion-step]")];
+            bars.forEach((bar, index) => {
+                scheduleMotionStep(() => {
+                    bar.classList.add("active");
+                    playMidiValue(69, 0.34, 0, 0.035 + index * 0.035);
+                }, index * 430);
+            });
+
+            scheduleMotionStep(() => {
+                bars.forEach(item => item.classList.remove("active"));
+                playButton.disabled = false;
+                playButton.textContent = "Play again";
+            }, bars.length * 430 + 300);
+        }
+
+        if (settings.type === "scale") {
+            const keys = [...demo.querySelectorAll("[data-motion-pitch]")];
+            settings.notes.forEach((midi, index) => {
+                scheduleMotionStep(() => {
+                    keys.forEach(item => item.classList.remove("active"));
+                    const pitch = ((midi % 12) + 12) % 12;
+                    demo.querySelector(`[data-motion-pitch="${pitch}"]`)?.classList.add("active");
+                    playMidiValue(midi, 0.32, 0, 0.12);
+                }, index * 360);
+            });
+
+            scheduleMotionStep(() => {
+                keys.forEach(item => item.classList.remove("active"));
+                playButton.disabled = false;
+                playButton.textContent = "Play again";
+            }, settings.notes.length * 360 + 260);
+        }
+    });
+}
+
 const lessonMemoryPairs = {
     "Treble Clef": [["G landmark", "Second line"], ["F A C E", "Spaces"], ["E G B D F", "Lines"]],
     "Bass Clef": [["F landmark", "Fourth line"], ["A C E G", "Spaces"], ["G B D F A", "Lines"]],
@@ -735,7 +905,7 @@ function openCourse(index) {
                     }
                 </div>
             </section>
-        `).join("") + renderMemoryGame(course) + renderLessonChallenge(course);
+        `).join("") + renderCourseMotionDemo(course) + renderMemoryGame(course) + renderLessonChallenge(course);
 
     const previous = document.getElementById("previous-course");
     const next = document.getElementById("next-course");
@@ -753,6 +923,7 @@ function openCourse(index) {
     requestAnimationFrame(() => {
         renderCourseVisuals(course);
         setupLessonInteractions(course);
+        setupCourseMotionDemo(course);
         setupMemoryGame(course);
         setupLessonChallenge(course);
     });
@@ -810,7 +981,7 @@ function getLessonAudioContext() {
     return lessonAudioContext;
 }
 
-function playMidiValue(midi, duration = 0.5, startDelay = 0) {
+function playMidiValue(midi, duration = 0.5, startDelay = 0, volume = 0.16) {
     const context = getLessonAudioContext();
     if (!context || midi === null) return;
 
@@ -822,7 +993,7 @@ function playMidiValue(midi, duration = 0.5, startDelay = 0) {
     oscillator.type = "triangle";
     oscillator.frequency.setValueAtTime(frequency, start);
     gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(0.16, start + 0.025);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.001, volume), start + 0.025);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
 
     oscillator.connect(gain);
