@@ -821,3 +821,44 @@ h1 {
         line-height: 1.1;
     }
 }
+
+
+/* One-octave note-finding exercise */
+.keyboard-guide-feedback {
+    min-height: 24px;
+    margin: 14px 0 2px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.keyboard-guide-feedback.correct {
+    color: var(--success);
+}
+
+.keyboard-guide-feedback.wrong {
+    color: var(--error);
+}
+
+.mini-white-key.quiz-correct {
+    background: #e6f2ec;
+    color: var(--success);
+    box-shadow: inset 0 -5px 0 var(--success);
+}
+
+.mini-white-key.quiz-wrong {
+    background: #f7eaea;
+    color: var(--error);
+    box-shadow: inset 0 -5px 0 var(--error);
+}
+
+.mini-black-key.quiz-correct {
+    background: var(--success);
+    box-shadow: 0 0 0 3px rgba(35, 112, 82, 0.2);
+}
+
+.mini-black-key.quiz-wrong {
+    background: var(--error);
+    box-shadow: 0 0 0 3px rgba(164, 67, 67, 0.18);
+}
