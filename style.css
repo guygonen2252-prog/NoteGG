@@ -1291,3 +1291,91 @@ h1 {
         width: 100%;
     }
 }
+
+
+/* Cross-platform rhythm notation */
+.lesson-section {
+    animation: none;
+    opacity: 1;
+    transform: none;
+}
+
+.rhythm-svg {
+    display: block;
+    width: 52px;
+    height: 62px;
+    color: var(--navy);
+    overflow: visible;
+}
+
+.rhythm-sequence {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 62px;
+}
+
+.rhythm-sequence .rhythm-svg {
+    width: 30px;
+    height: 52px;
+    flex: 0 0 auto;
+}
+
+.rhythm-operator {
+    color: var(--navy);
+    font-family: "Manrope", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.rhythm-symbol-line .symbol-chip strong {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 68px;
+    color: var(--navy);
+    animation: none;
+}
+
+#rhythm-symbol {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#rhythm-symbol .rhythm-svg {
+    width: 110px;
+    height: 128px;
+}
+
+.motion-beat strong {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.motion-beat .rhythm-svg {
+    width: 34px;
+    height: 44px;
+}
+
+@media (max-width: 620px) {
+    .rhythm-sequence {
+        gap: 2px;
+    }
+
+    .rhythm-sequence .rhythm-svg {
+        width: 25px;
+        height: 46px;
+    }
+
+    .rhythm-symbol-line .symbol-chip {
+        min-width: 0;
+    }
+
+    #rhythm-symbol .rhythm-svg {
+        width: 92px;
+        height: 108px;
+    }
+}
