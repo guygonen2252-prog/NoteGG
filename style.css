@@ -862,3 +862,114 @@ h1 {
     background: var(--error);
     box-shadow: 0 0 0 3px rgba(164, 67, 67, 0.18);
 }
+
+
+/* Course quick challenges */
+.lesson-challenge {
+    margin: 18px 58px 48px;
+    padding: 28px;
+    border: 1px solid rgba(164, 122, 53, 0.35);
+    border-radius: 12px;
+    background: linear-gradient(145deg, #fff 0%, var(--gold-soft) 100%);
+    box-shadow: 0 16px 38px rgba(19, 33, 60, 0.07);
+}
+
+.challenge-topline {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+    color: var(--gold);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+}
+
+.lesson-challenge h2 {
+    margin: 0 0 20px;
+    color: var(--navy);
+    font-family: "Newsreader", serif;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    font-weight: 500;
+}
+
+.challenge-choices {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.challenge-choice {
+    min-height: 52px;
+    padding: 11px 14px;
+    border: 1px solid var(--line-dark);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--navy);
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.challenge-choice:hover:not(:disabled) {
+    border-color: var(--gold);
+    background: var(--gold-soft);
+    transform: translateY(-1px);
+}
+
+.challenge-choice:disabled {
+    cursor: default;
+}
+
+.challenge-choice.correct {
+    border-color: var(--success);
+    background: #e6f2ec;
+    color: var(--success);
+}
+
+.challenge-choice.wrong {
+    border-color: var(--error);
+    background: #f7eaea;
+    color: var(--error);
+}
+
+.challenge-feedback {
+    min-height: 24px;
+    margin: 16px 0 0;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.challenge-feedback.correct { color: var(--success); }
+.challenge-feedback.wrong { color: var(--error); }
+
+.challenge-next {
+    min-height: 42px;
+    margin-top: 12px;
+    padding: 9px 18px;
+    border: 1px solid var(--navy);
+    border-radius: 7px;
+    background: var(--navy);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.challenge-next:hover {
+    background: var(--navy-soft);
+}
+
+@media (max-width: 720px) {
+    .lesson-challenge {
+        margin: 12px 20px 32px;
+        padding: 22px 18px;
+    }
+
+    .challenge-choices {
+        grid-template-columns: 1fr;
+    }
+
+    .challenge-choice {
+        min-height: 48px;
+    }
+}
