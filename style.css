@@ -527,7 +527,11 @@ h1 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    * { scroll-behavior: auto !important; transition: none !important; }
+    * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+        animation: none !important;
+    }
 }
 
 
@@ -575,4 +579,146 @@ h1 {
     padding: 5px 8px;
     background: var(--paper);
     font-size: .82rem;
+}
+
+
+/* Interactive lesson presentation */
+.lesson-section {
+    animation: lessonReveal 420ms ease both;
+}
+
+.lesson-section:nth-child(2) { animation-delay: 60ms; }
+.lesson-section:nth-child(3) { animation-delay: 120ms; }
+.lesson-section:nth-child(4) { animation-delay: 180ms; }
+
+.lesson-visual {
+    position: relative;
+    overflow: hidden;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.lesson-visual:hover {
+    border-color: rgba(164, 122, 53, 0.5);
+    box-shadow: 0 14px 35px rgba(19, 33, 60, 0.08);
+}
+
+.lesson-visual-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+}
+
+.lesson-visual-copy > span {
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.visual-play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 9px 15px;
+    border: 1px solid rgba(164, 122, 53, 0.35);
+    border-radius: 999px;
+    background: var(--gold-soft);
+    color: var(--navy);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.visual-play:hover {
+    background: var(--gold);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.visual-play:disabled {
+    cursor: default;
+    opacity: 0.8;
+    transform: none;
+}
+
+.visual-hint {
+    display: block;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.lesson-visual.is-playing {
+    border-color: var(--gold);
+    box-shadow: 0 16px 40px rgba(164, 122, 53, 0.16);
+}
+
+.lesson-visual.is-playing::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 20%, rgba(164, 122, 53, 0.12) 48%, transparent 76%);
+    transform: translateX(-110%);
+    animation: lessonSweep 1.2s ease-in-out infinite;
+}
+
+.mini-white-key,
+.mini-black-key {
+    appearance: none;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease, transform 120ms ease;
+}
+
+.mini-white-key:active,
+.mini-white-key.is-active {
+    background: var(--gold-soft);
+    color: var(--navy);
+    transform: translateY(2px);
+}
+
+.mini-black-key:active,
+.mini-black-key.is-active {
+    background: var(--gold);
+    color: #fff;
+    transform: translateY(2px);
+}
+
+.rhythm-symbol-line .symbol-chip strong {
+    animation: rhythmPulse 2.4s ease-in-out infinite;
+}
+
+.rhythm-symbol-line .symbol-chip:nth-child(2) strong { animation-delay: 200ms; }
+.rhythm-symbol-line .symbol-chip:nth-child(3) strong { animation-delay: 400ms; }
+.rhythm-symbol-line .symbol-chip:nth-child(4) strong { animation-delay: 600ms; }
+.rhythm-symbol-line .symbol-chip:nth-child(5) strong { animation-delay: 800ms; }
+
+@keyframes lessonReveal {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lessonSweep {
+    to { transform: translateX(110%); }
+}
+
+@keyframes rhythmPulse {
+    0%, 72%, 100% { color: var(--navy); transform: translateY(0); }
+    82% { color: var(--gold); transform: translateY(-3px); }
+}
+
+@media (max-width: 820px) {
+    .lesson-visual-copy {
+        align-items: center;
+        text-align: center;
+    }
+
+    .visual-play {
+        min-width: 132px;
+        min-height: 46px;
+    }
 }
