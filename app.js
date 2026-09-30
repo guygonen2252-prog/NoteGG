@@ -1,3 +1,69 @@
+function rhythmIcon(type) {
+    const icons = {
+        whole: {
+            label: "Whole note",
+            drawing: '<ellipse cx="30" cy="48" rx="14" ry="8" fill="none" stroke="currentColor" stroke-width="4"/>'
+        },
+        half: {
+            label: "Half note",
+            drawing: '<ellipse cx="27" cy="49" rx="13" ry="8" fill="none" stroke="currentColor" stroke-width="4" transform="rotate(-18 27 49)"/><path d="M39 47V10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>'
+        },
+        quarter: {
+            label: "Quarter note",
+            drawing: '<ellipse cx="27" cy="49" rx="13" ry="8" fill="currentColor" transform="rotate(-18 27 49)"/><path d="M39 47V10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>'
+        },
+        eighth: {
+            label: "Eighth note",
+            drawing: '<ellipse cx="24" cy="50" rx="12" ry="8" fill="currentColor" transform="rotate(-18 24 50)"/><path d="M35 48V10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M35 11C50 15 51 28 39 34C45 25 43 20 35 19Z" fill="currentColor"/>'
+        },
+        sixteenth: {
+            label: "Sixteenth note",
+            drawing: '<ellipse cx="23" cy="52" rx="12" ry="8" fill="currentColor" transform="rotate(-18 23 52)"/><path d="M34 50V8" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M34 9C50 13 51 24 39 30C45 22 42 18 34 17Z" fill="currentColor"/><path d="M34 22C49 26 49 37 38 43C44 35 41 31 34 30Z" fill="currentColor"/>'
+        },
+        "whole-rest": {
+            label: "Whole rest",
+            drawing: '<path d="M9 27H51" stroke="currentColor" stroke-width="3"/><rect x="20" y="27" width="20" height="10" rx="1" fill="currentColor"/>'
+        },
+        "half-rest": {
+            label: "Half rest",
+            drawing: '<path d="M9 39H51" stroke="currentColor" stroke-width="3"/><rect x="20" y="29" width="20" height="10" rx="1" fill="currentColor"/>'
+        },
+        "quarter-rest": {
+            label: "Quarter rest",
+            drawing: '<path d="M35 7L22 25L35 36L24 48L32 61" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>'
+        },
+        "eighth-rest": {
+            label: "Eighth rest",
+            drawing: '<circle cx="22" cy="18" r="6" fill="currentColor"/><path d="M27 20C41 20 41 31 34 39L25 58" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>'
+        },
+        "sixteenth-rest": {
+            label: "Sixteenth rest",
+            drawing: '<circle cx="20" cy="15" r="5" fill="currentColor"/><circle cx="29" cy="29" r="5" fill="currentColor"/><path d="M24 17C39 18 41 29 34 38L25 59M33 31C45 32 45 42 39 49" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>'
+        },
+        "dotted-quarter": {
+            label: "Dotted quarter note",
+            drawing: '<ellipse cx="23" cy="49" rx="12" ry="8" fill="currentColor" transform="rotate(-18 23 49)"/><path d="M34 47V10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="48" cy="49" r="4" fill="currentColor"/>'
+        },
+        tie: {
+            label: "Tied notes",
+            drawing: '<ellipse cx="15" cy="39" rx="10" ry="6" fill="none" stroke="currentColor" stroke-width="3"/><path d="M24 38V10" stroke="currentColor" stroke-width="3"/><ellipse cx="46" cy="39" rx="10" ry="6" fill="currentColor"/><path d="M55 38V10" stroke="currentColor" stroke-width="3"/><path d="M15 52C24 63 38 63 47 52" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>'
+        }
+    };
+
+    const icon = icons[type];
+    if (!icon) return "";
+
+    return `<svg class="rhythm-svg" viewBox="0 0 60 70" role="img" aria-label="${icon.label}" focusable="false">${icon.drawing}</svg>`;
+}
+
+function rhythmSequence(items) {
+    return `<span class="rhythm-sequence">${items.map(item =>
+        ["+", "="].includes(item)
+            ? `<span class="rhythm-operator">${item}</span>`
+            : rhythmIcon(item)
+    ).join("")}</span>`;
+}
+
 const courses = [
     {
         title: "Treble Clef",
@@ -118,7 +184,7 @@ const courses = [
             {
                 title: "Pulse and beat",
                 text: "The beat is the steady pulse of music.",
-                chips: [["♩  ♩  ♩  ♩", "Count evenly: 1 2 3 4"]]
+                chips: [[rhythmSequence(["quarter", "quarter", "quarter", "quarter"]), "Count evenly: 1 2 3 4"]]
             },
             {
                 title: "Measures and bar lines",
@@ -133,32 +199,32 @@ const courses = [
             {
                 title: "Whole and half notes",
                 text: "Whole note: 4 beats. Half note: 2 beats.",
-                chips: [["𝅝", "Whole note — 4 beats"], ["𝅗𝅥", "Half note — 2 beats"]]
+                chips: [[rhythmIcon("whole"), "Whole note — 4 beats"], [rhythmIcon("half"), "Half note — 2 beats"]]
             },
             {
                 title: "Quarter notes",
                 text: "Quarter note: 1 beat.",
-                chips: [["♩ ♩ ♩ ♩", "Count: 1 2 3 4"]]
+                chips: [[rhythmSequence(["quarter", "quarter", "quarter", "quarter"]), "Count: 1 2 3 4"]]
             },
             {
                 title: "Eighth notes",
                 text: "Eighth note: ½ beat.",
-                chips: [["♪ + ♪ = ♩", "Count: 1 &"]]
+                chips: [[rhythmSequence(["eighth", "+", "eighth", "=", "quarter"]), "Count: 1 &"]]
             },
             {
                 title: "Sixteenth notes",
                 text: "Sixteenth note: ¼ beat.",
-                chips: [["𝅘𝅥𝅯 𝅘𝅥𝅯 𝅘𝅥𝅯 𝅘𝅥𝅯 = ♩", "Count: 1 e & a"]]
+                chips: [[rhythmSequence(["sixteenth", "sixteenth", "sixteenth", "sixteenth", "=", "quarter"]), "Count: 1 e & a"]]
             },
             {
                 title: "Rests",
                 text: "Rests are measured silences.",
-                chips: [["𝄻", "Whole rest — 4 beats"], ["𝄼", "Half rest — 2 beats"], ["𝄽", "Quarter rest — 1 beat"], ["𝄾", "Eighth rest — ½ beat"], ["𝄿", "Sixteenth rest — ¼ beat"]]
+                chips: [[rhythmIcon("whole-rest"), "Whole rest — 4 beats"], [rhythmIcon("half-rest"), "Half rest — 2 beats"], [rhythmIcon("quarter-rest"), "Quarter rest — 1 beat"], [rhythmIcon("eighth-rest"), "Eighth rest — ½ beat"], [rhythmIcon("sixteenth-rest"), "Sixteenth rest — ¼ beat"]]
             },
             {
                 title: "Dots and ties",
                 text: "A dot adds half. A tie joins matching notes.",
-                chips: [["♩.", "Dotted quarter — 1½ beats"], ["𝅗𝅥 + ♩", "Tied length — 3 beats"]]
+                chips: [[rhythmIcon("dotted-quarter"), "Dotted quarter — 1½ beats"], [rhythmIcon("tie"), "Tied length — 3 beats"]]
             },
             {
                 title: "Count before playing",
@@ -302,16 +368,16 @@ courses.push(
 );
 
 const rhythmQuestions = [
-    { symbol: "𝅝", name: "Whole note" },
-    { symbol: "𝅗𝅥", name: "Half note" },
-    { symbol: "♩", name: "Quarter note" },
-    { symbol: "♪", name: "Eighth note" },
-    { symbol: "𝅘𝅥𝅯", name: "Sixteenth note" },
-    { symbol: "𝄻", name: "Whole rest" },
-    { symbol: "𝄼", name: "Half rest" },
-    { symbol: "𝄽", name: "Quarter rest" },
-    { symbol: "𝄾", name: "Eighth rest" },
-    { symbol: "𝄿", name: "Sixteenth rest" }
+    { symbol: rhythmIcon("whole"), name: "Whole note" },
+    { symbol: rhythmIcon("half"), name: "Half note" },
+    { symbol: rhythmIcon("quarter"), name: "Quarter note" },
+    { symbol: rhythmIcon("eighth"), name: "Eighth note" },
+    { symbol: rhythmIcon("sixteenth"), name: "Sixteenth note" },
+    { symbol: rhythmIcon("whole-rest"), name: "Whole rest" },
+    { symbol: rhythmIcon("half-rest"), name: "Half rest" },
+    { symbol: rhythmIcon("quarter-rest"), name: "Quarter rest" },
+    { symbol: rhythmIcon("eighth-rest"), name: "Eighth rest" },
+    { symbol: rhythmIcon("sixteenth-rest"), name: "Sixteenth rest" }
 ]
 
 const screens = {
@@ -444,7 +510,7 @@ function renderCourseMotionDemo(course) {
             <div class="motion-rhythm" aria-label="Four quarter notes">
                 ${[1, 2, 3, 4].map(count => `
                     <div class="motion-beat" data-motion-step>
-                        <strong>♩</strong>
+                        <strong>${rhythmIcon("quarter")}</strong>
                         <span>${count}</span>
                     </div>
                 `).join("")}
@@ -1578,7 +1644,7 @@ function renderRhythmQuestion() {
 
     document.getElementById("rhythm-panel").classList.remove("hidden");
     document.getElementById("answer-options").classList.remove("hidden");
-    document.getElementById("rhythm-symbol").textContent = currentQuestion.symbol;
+    document.getElementById("rhythm-symbol").innerHTML = currentQuestion.symbol;
     document.getElementById("rhythm-name").textContent = "";
 
     renderNoteNameOptions(
