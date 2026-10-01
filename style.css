@@ -449,12 +449,16 @@ h1 {
     position: relative;
     width: 100%;
     height: 150px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     border: 5px solid var(--navy);
     border-radius: 8px;
     background: var(--navy);
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold) var(--navy);
 }
 
+.keyboard-stage { position: relative; width: 100%; height: 100%; }
 .white-keys { display: flex; width: 100%; height: 100%; }
 .key { cursor: pointer; user-select: none; transition: background-color 100ms ease; }
 .key.white { flex: 1; display: flex; align-items: flex-end; justify-content: center; height: 100%; padding: 0 1px 9px; border: 1px solid #d7d9dc; border-top: 0; border-radius: 0 0 3px 3px; background: #fff; color: #4f5969; font-size: .72rem; font-weight: 600; }
@@ -519,9 +523,10 @@ h1 {
     .course-header, .course-body, .course-footer { padding-left: 24px; padding-right: 24px; }
     .setup-panel, .results-panel, .exercise-workspace { padding: 28px 18px; }
     .exercise-topbar { grid-template-columns: 54px 1fr 46px; gap: 10px; }
-    .piano-container { height: 122px; }
-    .key.white { color: #4f5969; font-size: .55rem; }
-    .key.black { color: #fff; font-size: .49rem; }
+    .piano-container { height: 136px; }
+    .keyboard-stage { width: max(100%, calc(var(--white-key-count, 17) * 42px)); }
+    .key.white { min-width: 42px; color: #4f5969; font-size: .68rem; }
+    .key.black { color: #fff; font-size: .54rem; }
     .answer-options { grid-template-columns: repeat(2, 1fr); }
     .site-footer { align-items: flex-start; flex-direction: column; justify-content: center; gap: 2px; }
 }
@@ -1304,8 +1309,15 @@ h1 {
     display: block;
     width: 52px;
     height: 62px;
-    color: var(--navy);
+    color: #13213c !important;
     overflow: visible;
+}
+
+.rhythm-svg path,
+.rhythm-svg ellipse,
+.rhythm-svg circle,
+.rhythm-svg rect {
+    vector-effect: non-scaling-stroke;
 }
 
 .rhythm-sequence {
@@ -1400,12 +1412,12 @@ h1 {
     min-width: 0;
 }
 
-.rhythm-symbol-line .symbol-chip:has(.rhythm-sequence) {
+.rhythm-symbol-line .rhythm-sequence-chip {
     min-width: 190px;
     overflow-x: auto;
 }
 
-.rhythm-symbol-line .symbol-chip:has(.rhythm-sequence) strong {
+.rhythm-symbol-line .rhythm-sequence-chip strong {
     min-height: 58px;
     overflow: visible;
 }
@@ -1421,8 +1433,48 @@ h1 {
         height: 44px !important;
     }
 
-    .rhythm-symbol-line .symbol-chip:has(.rhythm-sequence) {
+    .rhythm-symbol-line .rhythm-sequence-chip {
         width: 100%;
         min-width: 0;
     }
 }
+
+/* Self-contained staff notation. It does not depend on an external font or script. */
+.staff-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 145px;
+    color: var(--navy);
+    overflow: visible;
+}
+
+.staff-lines line,
+.ledger-line,
+.note-stem {
+    stroke: currentColor;
+    stroke-width: 1.5;
+    shape-rendering: geometricPrecision;
+}
+
+.ledger-line { stroke-width: 1.7; }
+.note-stem { stroke-width: 1.8; }
+.note-head { fill: currentColor; }
+
+.staff-clef {
+    fill: currentColor;
+    font-family: "Noto Music", "Bravura Text", "Segoe UI Symbol", serif;
+    font-size: 64px;
+}
+
+.staff-clef-bass { font-size: 54px; }
+
+.staff-accidental {
+    fill: currentColor;
+    font-family: "Noto Music", "Bravura Text", "Segoe UI Symbol", serif;
+    font-size: 22px;
+}
+
+.key-accidental { font-size: 20px; }
+
+#staff-container .staff-svg { min-height: 165px; }
