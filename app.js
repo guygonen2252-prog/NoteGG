@@ -53,7 +53,7 @@ function rhythmIcon(type) {
     const icon = icons[type];
     if (!icon) return "";
 
-    return `<svg class="rhythm-svg" viewBox="0 0 60 70" role="img" aria-label="${icon.label}" focusable="false">${icon.drawing}</svg>`;
+    return `<svg class="rhythm-svg" viewBox="0 0 60 70" role="img" aria-label="${icon.label}" focusable="false" style="color:#13213c">${icon.drawing}</svg>`;
 }
 
 function rhythmSequence(items) {
@@ -960,7 +960,7 @@ function openCourse(index) {
                             ? `
                                 <div class="symbol-line${course.title === "Rhythm" ? " rhythm-symbol-line" : ""}">
                                     ${section.chips.map(chip => `
-                                        <div class="symbol-chip">
+                                        <div class="symbol-chip${String(chip[0]).includes("rhythm-sequence") ? " rhythm-sequence-chip" : ""}">
                                             <strong>${chip[0]}</strong>
                                             <small>${chip[1]}</small>
                                         </div>
@@ -1186,6 +1186,109 @@ function setupLessonInteractions(course) {
     bindDemoKeys();
 }
 
+const staffLetterIndex = { c: 0, d: 1, e: 2, f: 3, g: 4, a: 5, b: 6 };
+
+function parseWrittenNote(note) {
+    const match = /^([a-g])([#b]?)(-?\d+)$/i.exec(note);
+    if (!match) return null;
+
+    return {
+        letter: match[1].toLowerCase(),
+        accidental: match[2],
+        octave: Number(match[3])
+    };
+}
+
+function staffStep(note) {
+    const parsed = parseWrittenNote(note);
+    return parsed ? parsed.octave * 7 + staffLetterIndex[parsed.letter] : 0;
+}
+
+function keySignatureMarks(key, clef, startX) {
+    const marks = keySignatureAccidentals[key] || {};
+    const sharpOrder = ["F", "C", "G", "D", "A", "E", "B"];
+    const flatOrder = ["B", "E", "A", "D", "G", "C", "F"];
+    const isFlat = Object.values(marks)[0] === -1;
+    const order = isFlat ? flatOrder : sharpOrder;
+    const trebleNotes = isFlat
+        ? ["b4", "e5", "a4", "d5", "g4", "c5", "f4"]
+        : ["f5", "c5", "g5", "d5", "a4", "e5", "b4"];
+    const bassNotes = isFlat
+        ? ["b2", "e3", "a2", "d3", "g2", "c3", "f2"]
+        : ["f3", "c3", "g3", "d3", "a2", "e3", "b2"];
+    const positions = clef === "bass" ? bassNotes : trebleNotes;
+
+    return order
+        .filter(letter => Object.prototype.hasOwnProperty.call(marks, letter))
+        .map((letter, index) => ({
+            symbol: isFlat ? "♭" : "♯",
+            note: positions[index],
+            x: startX + index * 15
+        }));
+}
+
+function createStaffSvg({ notes = [], clef = "treble", key = "C", label = "Music notation", width = 680, practice = false }) {
+    const safeWidth = Math.max(240, Math.round(width));
+    const height = practice ? 170 : 150;
+    const topLineY = 48;
+    const lineGap = 13;
+    const bottomLineY = topLineY + lineGap * 4;
+    const bottomNote = clef === "bass" ? "g2" : "e4";
+    const bottomStep = staffStep(bottomNote);
+    const clefSpace = 72;
+    const keyMarks = keySignatureMarks(key, clef, clefSpace);
+    const noteStart = clefSpace + (keyMarks.length ? keyMarks.length * 15 + 18 : 20);
+    const noteEnd = safeWidth - 24;
+    const spacing = notes.length > 1 ? (noteEnd - noteStart) / (notes.length - 1) : 0;
+    const lineStart = 14;
+    const lineEnd = safeWidth - 12;
+    const escapeText = value => String(value).replace(/[&<>\"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '\"': "&quot;" })[character]);
+    const yFor = note => bottomLineY - (staffStep(note) - bottomStep) * (lineGap / 2);
+    const lines = Array.from({ length: 5 }, (_, index) =>
+        `<line x1="${lineStart}" y1="${topLineY + index * lineGap}" x2="${lineEnd}" y2="${topLineY + index * lineGap}" />`
+    ).join("");
+    const clefSymbol = clef === "bass" ? "𝄢" : "𝄞";
+    const clefY = clef === "bass" ? 93 : 102;
+    const keyMarkup = keyMarks.map(mark =>
+        `<text class="staff-accidental key-accidental" x="${mark.x}" y="${yFor(mark.note) + 7}">${mark.symbol}</text>`
+    ).join("");
+
+    const noteMarkup = notes.map((note, index) => {
+        const parsed = parseWrittenNote(note);
+        if (!parsed) return "";
+
+        const x = notes.length === 1 ? (noteStart + noteEnd) / 2 : noteStart + index * spacing;
+        const y = yFor(note);
+        const minLineY = Math.min(y, bottomLineY);
+        const maxLineY = Math.max(y, topLineY);
+        const ledger = [];
+
+        if (y > bottomLineY + 1) {
+            for (let ledgerY = bottomLineY + lineGap; ledgerY <= y + 1; ledgerY += lineGap) {
+                ledger.push(`<line class="ledger-line" x1="${x - 13}" y1="${ledgerY}" x2="${x + 13}" y2="${ledgerY}" />`);
+            }
+        }
+
+        if (y < topLineY - 1) {
+            for (let ledgerY = topLineY - lineGap; ledgerY >= y - 1; ledgerY -= lineGap) {
+                ledger.push(`<line class="ledger-line" x1="${x - 13}" y1="${ledgerY}" x2="${x + 13}" y2="${ledgerY}" />`);
+            }
+        }
+
+        const accidental = parsed.accidental === "#" ? "♯" : parsed.accidental === "b" ? "♭" : "";
+        const stemUp = y >= (topLineY + bottomLineY) / 2;
+        const stem = practice || notes.length <= 8
+            ? stemUp
+                ? `<line class="note-stem" x1="${x + 7}" y1="${y}" x2="${x + 7}" y2="${minLineY - 31}" />`
+                : `<line class="note-stem" x1="${x - 7}" y1="${y}" x2="${x - 7}" y2="${maxLineY + 31}" />`
+            : "";
+
+        return `${ledger.join("")}${accidental ? `<text class="staff-accidental" x="${x - 20}" y="${y + 6}">${accidental}</text>` : ""}<ellipse class="note-head" cx="${x}" cy="${y}" rx="8" ry="5.5" transform="rotate(-18 ${x} ${y})" />${stem}`;
+    }).join("");
+
+    return `<svg class="staff-svg" viewBox="0 0 ${safeWidth} ${height}" role="img" aria-label="${escapeText(label)}" preserveAspectRatio="xMidYMid meet"><g class="staff-lines">${lines}</g><text class="staff-clef staff-clef-${clef}" x="20" y="${clefY}">${clefSymbol}</text>${keyMarkup}<g class="staff-notes">${noteMarkup}</g></svg>`;
+}
+
 function renderCourseVisuals(course) {
     document
         .querySelectorAll("[data-visual-index]")
@@ -1224,57 +1327,13 @@ function renderCourseVisuals(course) {
                 Math.min(["scale", "range"].includes(visual.type) ? 680 : 320, target.clientWidth || (["scale", "range"].includes(visual.type) ? 680 : 320))
             );
 
-            try {
-                const VexFlow = window.Vex?.Flow || window.VexFlow;
-
-                if (!VexFlow) {
-                    throw new Error("Music notation library did not load.");
-                }
-
-                const factory = new VexFlow.Factory({
-                    renderer: {
-                        elementId: target.id,
-                        width,
-                        height: 145
-                    }
-                });
-
-                const score = factory.EasyScore();
-                const system = factory.System({
-                    x: 10,
-                    y: 10,
-                    width: width - 30
-                });
-
-                const hasNotes = Array.isArray(visual.notes);
-                const notes = hasNotes
-                    ? visual.notes.map(note => `${note}/q`).join(", ")
-                    : "c5/w";
-
-                const voice = score.voice(
-                    score.notes(notes, { clef: visual.clef }),
-                    { time: hasNotes ? `${visual.notes.length}/4` : "4/4" }
-                );
-
-                const stave = system
-                    .addStave({ voices: [voice] })
-                    .addClef(visual.clef);
-
-                if (visual.key) {
-                    stave.addKeySignature(visual.key);
-                }
-
-                factory.draw();
-            } catch (error) {
-                target.innerHTML = `
-                    <div class="notation-fallback" role="img" aria-label="${visual.caption}">
-                        <span class="fallback-clef">${visual.clef === "bass" ? "𝄢" : "𝄞"}</span>
-                        <span class="fallback-staff-lines" aria-hidden="true"></span>
-                        <strong>${visual.caption}</strong>
-                    </div>
-                `;
-                console.warn("Lesson visual fallback used:", error);
-            }
+            target.innerHTML = createStaffSvg({
+                notes: Array.isArray(visual.notes) ? visual.notes : [],
+                clef: visual.clef,
+                key: visual.key || "C",
+                label: visual.caption,
+                width
+            });
         });
 }
 
@@ -1348,40 +1407,13 @@ function drawStaff(question) {
         Math.min(300, container.clientWidth || 300)
     );
 
-    const factory = new (window.Vex?.Flow || window.VexFlow).Factory({
-        renderer: {
-            elementId: container.id,
-            width: width,
-            height: 165
-        }
+    container.innerHTML = createStaffSvg({
+        notes: [question.vNote],
+        clef: question.clef,
+        label: `${question.note}${question.octave} on the ${question.clef} staff`,
+        width,
+        practice: true
     });
-
-    const score =
-        factory.EasyScore();
-
-    const system =
-        factory.System({
-            x: 10,
-            y: 15,
-            width: width - 30
-        });
-
-    system
-        .addStave({
-            voices: [
-                score.voice(
-                    score.notes(
-                        `${question.vNote}/w`,
-                        {
-                            clef: question.clef
-                        }
-                    )
-                )
-            ]
-        })
-        .addClef(question.clef);
-
-    factory.draw();
 }
 
 function naturalKeyboardNotes(startMidi, endMidi) {
@@ -1437,6 +1469,12 @@ function renderKeyboard(startMidi, endMidi, onSelect, labeler = item => item.not
 
     const totalWhite =
         whiteNotes.length;
+
+    const keyboardStage = document.querySelector(".keyboard-stage");
+    if (keyboardStage) {
+        keyboardStage.style.setProperty("--white-key-count", totalWhite);
+        document.getElementById("piano-container").scrollLeft = 0;
+    }
 
     const blackWidth =
         (100 / totalWhite) * 0.64;
