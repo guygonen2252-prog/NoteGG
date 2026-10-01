@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Learn music theory and build practical reading skills with NoteGG.">
-    <title>NoteGG — Learn Music Theory</title>
+    <meta name="description" content="Build confident piano sight-reading with clear lessons and focused practice.">
+    <title>NoteGG — Piano Sight-Reading Practice</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=27">
-    <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.5/build/cjs/vexflow.js"></script>
+    <link rel="stylesheet" href="style.css?v=28">
 </head>
 <body>
     <header class="site-header">
@@ -27,9 +26,9 @@
     <main>
         <section id="home-screen" class="screen home-screen">
             <div class="home-intro">
-                <p class="section-label">MUSIC THEORY FOR BEGINNERS</p>
-                <h1>Learn to read music.</h1>
-                <p class="lead">Start with Learn. Practice whenever you want.</p>
+                <p class="section-label">PIANO SIGHT-READING FOR BEGINNERS</p>
+                <h1>Read music with confidence.</h1>
+                <p class="lead">Clear lessons and focused practice, one skill at a time.</p>
             </div>
             <div class="home-choices">
                 <button class="choice-panel" type="button" data-go="learn">
@@ -39,7 +38,7 @@
                 </button>
                 <button class="choice-panel" type="button" data-go="practice">
                     <span class="choice-number">02</span>
-                    <span class="choice-content"><strong>Practice</strong><small>Practise note reading or rhythm.</small></span>
+                    <span class="choice-content"><strong>Practice</strong><small>Build speed with notes, rhythm and scales.</small></span>
                     <span class="choice-arrow" aria-hidden="true">→</span>
                 </button>
             </div>
@@ -48,7 +47,7 @@
         <section id="learn-screen" class="screen content-screen hidden">
             <button class="text-button back-control" type="button" data-back>← Back</button>
             <div class="page-heading">
-                <div><p class="section-label">LEARN</p><h1>Start with the basics</h1><p>New to music? Begin with Course 1. Every course is open.</p></div>
+                <div><p class="section-label">LEARN</p><h1>Learn the essentials</h1><p>New to written music? Start with Treble Clef. Every course is open.</p></div>
             </div>
             <div id="course-grid" class="course-grid"></div>
         </section>
@@ -132,7 +131,12 @@
                 <div class="exercise-heading"><p class="section-label" id="exercise-label">NOTE READING</p><h1 id="exercise-title">Play the written note</h1><p id="exercise-instruction">Choose the matching piano key.</p></div>
                 <div id="staff-panel" class="notation-panel"><div id="staff-container" aria-label="Music staff"></div></div>
                 <div id="rhythm-panel" class="rhythm-panel hidden"><span id="rhythm-symbol" class="rhythm-symbol" aria-hidden="true">♩</span><strong id="rhythm-name">Quarter note</strong></div>
-                <div id="piano-container" class="piano-container"><div id="white-keys-container" class="white-keys"></div><div id="black-keys-container"></div></div>
+                <div id="piano-container" class="piano-container" aria-label="Scrollable piano keyboard">
+                    <div class="keyboard-stage">
+                        <div id="white-keys-container" class="white-keys"></div>
+                        <div id="black-keys-container"></div>
+                    </div>
+                </div>
                 <div id="answer-options" class="answer-options hidden"></div>
                 <p id="feedback" class="feedback" aria-live="polite"></p>
             </div>
@@ -140,7 +144,7 @@
 
     </main>
 
-    <footer class="site-footer"><span>NoteGG</span><span>Music theory made clear.</span></footer>
-    <script src="app.js?v=27"></script>
+    <footer class="site-footer"><span>NoteGG</span><span>Piano reading made clear.</span></footer>
+    <script src="app.js?v=28"></script>
 </body>
 </html>
