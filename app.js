@@ -1228,9 +1228,9 @@ function keySignatureMarks(key, clef, startX) {
 }
 
 function createStaffSvg({ notes = [], clef = "treble", key = "C", label = "Music notation", width = 680, practice = false }) {
-    const safeWidth = Math.max(240, Math.round(width));
-    const height = practice ? 170 : 150;
-    const topLineY = 48;
+    const safeWidth = Math.max(300, Math.round(width), notes.length * 44 + 170);
+    const height = 200;
+    const topLineY = 75;
     const lineGap = 13;
     const bottomLineY = topLineY + lineGap * 4;
     const bottomNote = clef === "bass" ? "g2" : "e4";
@@ -1248,7 +1248,7 @@ function createStaffSvg({ notes = [], clef = "treble", key = "C", label = "Music
         `<line x1="${lineStart}" y1="${topLineY + index * lineGap}" x2="${lineEnd}" y2="${topLineY + index * lineGap}" />`
     ).join("");
     const clefSymbol = clef === "bass" ? "𝄢" : "𝄞";
-    const clefY = clef === "bass" ? 93 : 102;
+    const clefY = clef === "bass" ? 120 : 129;
     const keyMarkup = keyMarks.map(mark =>
         `<text class="staff-accidental key-accidental" x="${mark.x}" y="${yFor(mark.note) + 7}">${mark.symbol}</text>`
     ).join("");
@@ -1283,7 +1283,9 @@ function createStaffSvg({ notes = [], clef = "treble", key = "C", label = "Music
                 : `<line class="note-stem" x1="${x - 7}" y1="${y}" x2="${x - 7}" y2="${maxLineY + 31}" />`
             : "";
 
-        return `${ledger.join("")}${accidental ? `<text class="staff-accidental" x="${x - 20}" y="${y + 6}">${accidental}</text>` : ""}<ellipse class="note-head" cx="${x}" cy="${y}" rx="8" ry="5.5" transform="rotate(-18 ${x} ${y})" />${stem}`;
+        const namedAccidental = accidental || ((keySignatureAccidentals[key] || {})[parsed.letter.toUpperCase()] === 1 ? "♯" : (keySignatureAccidentals[key] || {})[parsed.letter.toUpperCase()] === -1 ? "♭" : "");
+        const nameLabel = practice ? "" : `<text x="${x}" y="190" text-anchor="middle" font-family="sans-serif" font-size="12" fill="currentColor">${parsed.letter.toUpperCase()}${namedAccidental}${parsed.octave}</text>`;
+        return `${ledger.join("")}${accidental ? `<text class="staff-accidental" x="${x - 20}" y="${y + 6}">${accidental}</text>` : ""}<ellipse class="note-head" cx="${x}" cy="${y}" rx="8" ry="5.5" transform="rotate(-18 ${x} ${y})" />${stem}${nameLabel}`;
     }).join("");
 
     return `<svg class="staff-svg" viewBox="0 0 ${safeWidth} ${height}" role="img" aria-label="${escapeText(label)}" preserveAspectRatio="xMidYMid meet"><g class="staff-lines">${lines}</g><text class="staff-clef staff-clef-${clef}" x="20" y="${clefY}">${clefSymbol}</text>${keyMarkup}<g class="staff-notes">${noteMarkup}</g></svg>`;
