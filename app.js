@@ -1032,40 +1032,62 @@ function lessonNoteToMidi(note, keySignature = "C") {
     return (octave + 1) * 12 + naturalPitch + accidental;
 }
 
+let pianoAudioOutput = null;
 function getLessonAudioContext() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return null;
-
-    if (!lessonAudioContext) {
+    if (!lessonAudioContext || lessonAudioContext.state === "closed") {
         lessonAudioContext = new AudioContextClass();
+        pianoAudioOutput = lessonAudioContext.createDynamicsCompressor();
+        pianoAudioOutput.threshold.value = -12;
+        pianoAudioOutput.knee.value = 12;
+        pianoAudioOutput.ratio.value = 4;
+        pianoAudioOutput.attack.value = 0.003;
+        pianoAudioOutput.release.value = 0.18;
+        pianoAudioOutput.connect(lessonAudioContext.destination);
     }
-
-    if (lessonAudioContext.state === "suspended") {
-        lessonAudioContext.resume();
-    }
-
     return lessonAudioContext;
 }
 
 function playMidiValue(midi, duration = 0.5, startDelay = 0, volume = 0.16) {
     const context = getLessonAudioContext();
-    if (!context || midi === null) return;
-
-    const start = context.currentTime + startDelay;
-    const frequency = 440 * Math.pow(2, (midi - 69) / 12);
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-
-    oscillator.type = "triangle";
-    oscillator.frequency.setValueAtTime(frequency, start);
-    gain.gain.setValueAtTime(0.0001, start);
-    gain.gain.exponentialRampToValueAtTime(Math.max(0.001, volume), start + 0.025);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
-    oscillator.connect(gain);
-    gain.connect(context.destination);
-    oscillator.start(start);
-    oscillator.stop(start + duration + 0.03);
+    if (!context || midi === null || !Number.isFinite(midi)) return;
+    const soundNote = () => {
+        const start = context.currentTime + Math.max(0, startDelay) + 0.005;
+        const length = Math.max(0.35, duration);
+        const frequency = 440 * Math.pow(2, (midi - 69) / 12);
+        const level = Math.min(0.38, Math.max(0.015, volume * 1.8));
+        const envelope = context.createGain();
+        const partials = [];
+        envelope.gain.setValueAtTime(0.0001, start);
+        envelope.gain.exponentialRampToValueAtTime(level, start + 0.008);
+        envelope.gain.exponentialRampToValueAtTime(level * 0.65, start + 0.08);
+        envelope.gain.exponentialRampToValueAtTime(level * 0.28, start + length);
+        envelope.gain.exponentialRampToValueAtTime(0.0001, start + length + 0.22);
+        envelope.connect(pianoAudioOutput);
+        // A strong fundamental and softer upper partials make low notes audible
+        // on small speakers while keeping the written pitch unchanged.
+        [1, 0.38, 0.18, 0.08].forEach((strength, index) => {
+            const harmonic = index + 1;
+            if (frequency * harmonic >= context.sampleRate * 0.45) return;
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(frequency * harmonic, start);
+            gain.gain.setValueAtTime(strength / 1.64, start);
+            oscillator.connect(gain);
+            gain.connect(envelope);
+            partials.push({oscillator, gain});
+            oscillator.start(start);
+            oscillator.stop(start + length + 0.24);
+        });
+        if (partials.length) partials[0].oscillator.onended = () => {
+            partials.forEach(({oscillator, gain}) => { oscillator.disconnect(); gain.disconnect(); });
+            envelope.disconnect();
+        };
+    };
+    if (context.state === "running") soundNote();
+    else context.resume().then(soundNote).catch(() => {});
 }
 
 const pianoGuideWhiteNotes = [
