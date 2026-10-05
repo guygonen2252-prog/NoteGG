@@ -1033,61 +1033,96 @@ function lessonNoteToMidi(note, keySignature = "C") {
 }
 
 let pianoAudioOutput = null;
+let pianoSamplePromise = null;
+let pianoBuffers = null;
+let pendingPianoNote = 0;
 function getLessonAudioContext() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass) return null;
     if (!lessonAudioContext || lessonAudioContext.state === "closed") {
         lessonAudioContext = new AudioContextClass();
-        pianoAudioOutput = lessonAudioContext.createDynamicsCompressor();
-        pianoAudioOutput.threshold.value = -12;
-        pianoAudioOutput.knee.value = 12;
-        pianoAudioOutput.ratio.value = 4;
-        pianoAudioOutput.attack.value = 0.003;
-        pianoAudioOutput.release.value = 0.18;
+        pianoBuffers = null;
+        pianoSamplePromise = null;
+        pianoAudioOutput = lessonAudioContext.createGain();
+        pianoAudioOutput.gain.value = 0.85;
         pianoAudioOutput.connect(lessonAudioContext.destination);
     }
     return lessonAudioContext;
 }
 
+function setPianoAudioStatus(message) {
+    let status = document.getElementById("piano-audio-status");
+    if (!status) {
+        status = document.createElement("span");
+        status.id = "piano-audio-status";
+        status.setAttribute("role", "status");
+        document.querySelector(".site-footer")?.append(status);
+    }
+    status.textContent = message;
+}
+function loadPianoSamples() {
+    const context = getLessonAudioContext();
+    if (!context) return Promise.reject(new Error("Audio is unavailable"));
+    if (!pianoSamplePromise) {
+        pianoSamplePromise = fetch("piano-samples.json?v=1")
+            .then(response => {
+                if (!response.ok) throw new Error("Piano recordings could not load");
+                return response.json();
+            })
+            .then(async recordings => {
+                const entries = await Promise.all(Object.entries(recordings).map(async ([midi, base64]) => {
+                    const binary = atob(base64);
+                    const bytes = Uint8Array.from(binary, character => character.charCodeAt(0));
+                    const buffer = await context.decodeAudioData(bytes.buffer);
+                    return [Number(midi), buffer];
+                }));
+                pianoBuffers = new Map(entries);
+                setPianoAudioStatus("");
+                return pianoBuffers;
+            })
+            .catch(error => {
+                pianoSamplePromise = null;
+                setPianoAudioStatus("Piano sound could not load. Tap a key to retry.");
+                throw error;
+            });
+    }
+    return pianoSamplePromise;
+}
+
 function playMidiValue(midi, duration = 0.5, startDelay = 0, volume = 0.16) {
     const context = getLessonAudioContext();
     if (!context || midi === null || !Number.isFinite(midi)) return;
+    const token = sessionToken;
+    const request = ++pendingPianoNote;
     const soundNote = () => {
-        const start = context.currentTime + Math.max(0, startDelay) + 0.005;
-        const length = Math.max(0.35, duration);
-        const frequency = 440 * Math.pow(2, (midi - 69) / 12);
-        const level = Math.min(0.38, Math.max(0.015, volume * 1.8));
+        if (token !== sessionToken || !pianoBuffers) return;
+        const roots = [...pianoBuffers.keys()];
+        const root = roots.reduce((nearest, note) => Math.abs(note - midi) < Math.abs(nearest - midi) ? note : nearest);
+        const source = context.createBufferSource();
+        source.buffer = pianoBuffers.get(root);
+        source.playbackRate.value = Math.pow(2, (midi - root) / 12);
         const envelope = context.createGain();
-        const partials = [];
-        envelope.gain.setValueAtTime(0.0001, start);
-        envelope.gain.exponentialRampToValueAtTime(level, start + 0.008);
-        envelope.gain.exponentialRampToValueAtTime(level * 0.65, start + 0.08);
-        envelope.gain.exponentialRampToValueAtTime(level * 0.28, start + length);
-        envelope.gain.exponentialRampToValueAtTime(0.0001, start + length + 0.22);
+        const start = context.currentTime + Math.max(0, startDelay) + 0.005;
+        const hold = Math.max(0.12, duration);
+        const level = Math.min(1, Math.max(0.03, volume / 0.16));
+        envelope.gain.setValueAtTime(level, start);
+        envelope.gain.setValueAtTime(level, start + hold);
+        envelope.gain.exponentialRampToValueAtTime(0.0001, start + hold + 0.6);
+        source.connect(envelope);
         envelope.connect(pianoAudioOutput);
-        // A strong fundamental and softer upper partials make low notes audible
-        // on small speakers while keeping the written pitch unchanged.
-        [1, 0.38, 0.18, 0.08].forEach((strength, index) => {
-            const harmonic = index + 1;
-            if (frequency * harmonic >= context.sampleRate * 0.45) return;
-            const oscillator = context.createOscillator();
-            const gain = context.createGain();
-            oscillator.type = "sine";
-            oscillator.frequency.setValueAtTime(frequency * harmonic, start);
-            gain.gain.setValueAtTime(strength / 1.64, start);
-            oscillator.connect(gain);
-            gain.connect(envelope);
-            partials.push({oscillator, gain});
-            oscillator.start(start);
-            oscillator.stop(start + length + 0.24);
-        });
-        if (partials.length) partials[0].oscillator.onended = () => {
-            partials.forEach(({oscillator, gain}) => { oscillator.disconnect(); gain.disconnect(); });
-            envelope.disconnect();
-        };
+        source.onended = () => { source.disconnect(); envelope.disconnect(); };
+        source.start(start);
+        source.stop(start + hold + 0.62);
     };
-    if (context.state === "running") soundNote();
-    else context.resume().then(soundNote).catch(() => {});
+    const resume = context.state === "running" ? Promise.resolve() : context.resume();
+    if (pianoBuffers) resume.then(soundNote).catch(() => setPianoAudioStatus("Tap a key to enable piano sound."));
+    else {
+        setPianoAudioStatus("Loading piano sound…");
+        Promise.all([resume, loadPianoSamples()]).then(() => {
+            // Play only the most recent tap after loading, avoiding a burst of delayed notes.
+            if (request === pendingPianoNote) soundNote();
+        }).catch(() => {});
+    }
 }
 
 const pianoGuideWhiteNotes = [
@@ -2064,3 +2099,6 @@ document
 
 renderCourseGrid();
 showScreen("home", false);
+
+// Preload local acoustic recordings before the first keyboard tap.
+loadPianoSamples().catch(() => {});
