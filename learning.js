@@ -98,6 +98,11 @@ rhythmIcon = function(type) {
     }
     return `<svg class="rhythm-svg engraved-rhythm" viewBox="0 0 100 100" role="img" aria-label="${names[type]}" focusable="false" style="color:#13213c">${drawing}</svg>`;
 };
+// app.js builds this bank before the renderer above is replaced. Refresh its SVGs too.
+rhythmQuestions.forEach(item => {
+    const type = item.name.toLowerCase().replace(' note', '').replace(' rest', '-rest');
+    item.symbol = rhythmIcon(type);
+});
 function dynamicVisual(mark) {
     let x=0; const scale=.065; let min=0,max=0;
     const paths=[...mark].map(letter=>{const g=notationGlyphs[letter];if(!g)throw new Error('Unknown dynamic');min=Math.min(min,x+g.bounds[0]*scale);max=Math.max(max,x+g.bounds[2]*scale);const p=musicGlyph(letter,x,35,scale);x+=(g.advance+18)*scale;return p;}).join('');
