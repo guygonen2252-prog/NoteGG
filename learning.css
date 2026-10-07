@@ -66,3 +66,20 @@ button:disabled{cursor:default;opacity:.5}
  .exercise-workspace{padding:24px 13px}.bar-builder{gap:4px}.bar-builder .rhythm-svg{width:24px!important}
  .premium-featured>.beta-badge{white-space:normal}.guided-visual .rhythm-sequence{gap:4px}
 }
+
+/* Music symbols share engraved outlines and staff context. */
+.engraved-sign{width:min(260px,100%);height:auto;max-height:200px;overflow:visible}
+.sign-pair{flex-wrap:wrap;align-items:center}
+.dynamic-svg{height:52px;max-width:100%;color:#13213c;display:inline-block;vertical-align:middle;overflow:visible}
+.dynamic-row{gap:18px;align-items:center}
+.engraved-rhythm{overflow:visible}
+.guided-visual .rhythm-sequence .engraved-rhythm{width:54px!important;height:70px!important;flex-basis:54px}
+.quiz-symbol .engraved-rhythm{width:120px;height:120px}
+.guided-visual>.engraved-rhythm{width:120px;height:120px}
+#rhythm-symbol .engraved-rhythm{width:135px;height:135px;max-width:100%}
+.account-dialog{width:min(430px,calc(100% - 32px));max-height:calc(100dvh - 40px);padding:28px;border:1px solid var(--line);border-radius:14px;color:var(--navy);background:#fff;box-shadow:0 20px 80px #13213c30}
+.account-dialog::backdrop{background:rgba(19,33,60,.35)}
+.account-dialog h2{font-size:2rem;margin:12px 0}.account-dialog p{color:var(--muted);line-height:1.6;margin:14px 0}
+.account-dialog .button{width:100%;margin-top:12px;min-height:48px}.account-dialog .button:disabled{opacity:.65}
+.account-dialog-close{float:right;border:0;background:none;color:var(--navy);font:inherit;padding:8px;cursor:pointer}
+@media(max-width:620px){.main-nav button{padding:9px 6px;font-size:.78rem}.brand-word{font-size:1.25rem}.brand .beta-badge{font-size:8px}.sign-pair{gap:10px}.engraved-sign{max-height:165px}}
