@@ -116,6 +116,7 @@
         if(!current)return;
         current.token++;clearTimeout(current.timer);clearInterval(current.holdTimer);
         current.sources.forEach(s=>{try{s.stop();}catch{}});current.sources.clear();
+        current.host.querySelectorAll('.is-pressed').forEach(button=>button.classList.remove('is-pressed'));
         current.pressed=null;current.busy=false;
     }
     function sound(m,seconds,volume) {
@@ -230,7 +231,7 @@
     card.onclick=()=>{showScreen('scoreGame');modeSelect.value='notes';render(screen.querySelector('.score-game'),'notes');};
     practiceGrid.querySelector('[data-exercise="reading"]').after(card);
     const previousScreen=showScreen;
-    showScreen=function(name,add=true){stop();current=null;previousScreen(name,add);if(name==='scoreGame'){document.querySelector('[data-go="practice"]').classList.add('active');document.querySelector('[data-go="practice"]').setAttribute('aria-current','page');}};
+    showScreen=function(name,add=true){stop();current=null;previousScreen(name,add);if(name==='course')renderGuidedStep();if(name==='scoreGame'){render(screen.querySelector('.score-game'),modeSelect.value);document.querySelector('[data-go="practice"]').classList.add('active');document.querySelector('[data-go="practice"]').setAttribute('aria-current','page');}};
     const previousStep=renderGuidedStep;
     renderGuidedStep=function(){stop();current=null;previousStep();const course=courses[selectedCourseIndex],section=course.sections[lessonStep];
         let mode=null,notes=null;const clef=course.title==='Bass Clef'?'bass':'treble';
