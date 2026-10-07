@@ -74,6 +74,7 @@ button:disabled{cursor:default;opacity:.5}
 .dynamic-row{gap:18px;align-items:center}
 .engraved-rhythm{overflow:visible}
 .guided-visual .rhythm-sequence .engraved-rhythm{width:54px!important;height:70px!important;flex-basis:54px}
+.guided-visual .rhythm-sequence .engraved-rhythm[aria-label$="rest"]{width:100px!important;height:100px!important;flex-basis:100px}
 .quiz-symbol .engraved-rhythm{width:120px;height:120px}
 .guided-visual>.engraved-rhythm{width:120px;height:120px}
 #rhythm-symbol .engraved-rhythm{width:135px;height:135px;max-width:100%}
@@ -83,3 +84,4 @@ button:disabled{cursor:default;opacity:.5}
 .account-dialog .button{width:100%;margin-top:12px;min-height:48px}.account-dialog .button:disabled{opacity:.65}
 .account-dialog-close{float:right;border:0;background:none;color:var(--navy);font:inherit;padding:8px;cursor:pointer}
 @media(max-width:620px){.main-nav button{padding:9px 6px;font-size:.78rem}.brand-word{font-size:1.25rem}.brand .beta-badge{font-size:8px}.sign-pair{gap:10px}.engraved-sign{max-height:165px}}
+@media(max-width:380px){.site-header{height:auto;min-height:76px;flex-wrap:wrap;padding:12px 0}.main-nav{width:100%;justify-content:space-between}}
