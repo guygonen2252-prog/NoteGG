@@ -327,11 +327,11 @@ function buildBarQuestion() {
 function dynamicQuestion() {
     const entries=[["pp","Very soft"],["p","Soft"],["mp","Moderately soft"],["mf","Moderately loud"],["f","Loud"],["ff","Very loud"],["ppp","Extremely soft"],["fff","Extremely loud"],["sfz","Sudden strong emphasis"]];
     const [symbol,answer]=choose(entries);
-    return question("What does this dynamic mean?",answer,entries.map(p=>p[1]),`${symbol} means ${answer.toLowerCase()}. Keep the tempo unchanged.`,`<div class="dynamic-row" aria-hidden="true">${dynamicVisual(symbol)}</div>`);
+    return question("What does this dynamic mean?",answer,[answer,...shuffled(entries.map(p=>p[1]).filter(a=>a!==answer)).slice(0,3)],`${symbol} means ${answer.toLowerCase()}. Keep the tempo unchanged.`,`<div class="dynamic-row" aria-hidden="true">${dynamicVisual(symbol)}</div>`);
 }
 function signQuestion(name=choose(["Repeat","Fermata","Staccato","Accent","Slur","Tie","Crescendo","Diminuendo","8va","8vb"])) {
     const meanings={Repeat:"Repeat the section",Fermata:"Hold longer",Staccato:"Short and detached",Accent:"Give emphasis",Slur:"Play smoothly",Tie:"Play once and hold across both notes",Crescendo:"Gradually get louder",Diminuendo:"Gradually get softer","8va":"Play one octave higher","8vb":"Play one octave lower"};
-    return question("What does this sign ask you to do?",meanings[name],Object.values(meanings),`${name}: ${meanings[name].toLowerCase()}.`,`<div aria-hidden="true">${signVisual(name)}</div>`);
+    return question("What does this sign ask you to do?",meanings[name],[meanings[name],...shuffled(Object.values(meanings).filter(a=>a!==meanings[name])).slice(0,3)],`${name}: ${meanings[name].toLowerCase()}.`,`<div aria-hidden="true">${signVisual(name)}</div>`);
 }
 
 // Unlimited practice: manual next question gives time to understand feedback.
@@ -407,4 +407,3 @@ document.querySelector('[data-scale-group="both"] small').textContent="30 spelli
 document.querySelector('[data-scale-group="major"] small').textContent="15 key signatures";
 document.querySelector('[data-scale-group="minor"] small').textContent="15 key signatures";
 renderCourseGrid();
-
