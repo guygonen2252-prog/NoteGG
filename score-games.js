@@ -34,7 +34,7 @@
             // makeScaleNotes in the app accepts only a scale name; transpose for bass.
             if (clef==='bass') {const shift=Number(notes[0].slice(-1))-2;notes=notes.map(n=>n.replace(/\d$/,d=>String(+d-shift)));}
         } else if (mode==='accidentals') {
-            notes=[`c${octave}`,`c#${octave}`,`dn${octave}`,`eb${octave}`,`en${octave}`,`f#${octave}`,`g${octave}`,`c${octave+1}`];
+            notes=lessonNotes||[`c${octave}`,`c#${octave}`,`dn${octave}`,`eb${octave}`,`en${octave}`,`f#${octave}`,`g${octave}`,`c${octave+1}`];
         } else if (mode==='keys') {
             const choices=['G','D','F','Bb'];key=lessonKey||choices[Math.floor(seed*choices.length)%choices.length];
             notes=key==='F'||key==='Bb'?[`f${octave}`,`g${octave}`,`a${octave}`,`b${octave}`,`a${octave}`,`g${octave}`,`f${octave}`]:[`g${octave}`,`a${octave}`,`b${octave}`,`c${octave+1}`,`b${octave}`,`a${octave}`,`f${octave}`];
@@ -55,7 +55,7 @@
         }
         // Each bar is full: final shorter phrase is padded with written rests.
         const units=events.reduce((s,e)=>s+e.units,0);let remaining=(4-units%4)%4;
-        for(const value of ['half','quarter','eighth','sixteenth']) while(remaining>=lengths[value]) {events.push(event(null,value,key));remaining-=lengths[value];}
+        for(const value of (timed?['half','quarter','eighth','sixteenth']:['quarter'])) while(remaining>=lengths[value]) {events.push(event(timed?null:notes[notes.length-1],value,key));remaining-=lengths[value];}
         return {mode,clef,key,marking,scale,events,timed};
     }
     function noteY(note,clef) {
@@ -146,8 +146,13 @@
         if(Number(box.dataset.base)===base)return;
         box.dataset.base=base;
         box.innerHTML=`<div class="score-whites">${[0,2,4,5,7,9,11,12].map((p,i)=>`<button type="button" class="score-piano-key white" data-play-midi="${base+p}" aria-label="${noteNames[p%12]}${Math.floor((base+p)/12)-1}"><span>${noteNames[p%12]}<small>${Math.floor((base+p)/12)-1}</small></span></button>`).join('')}</div>${[1,3,6,8,10].map((p,i)=>`<button type="button" class="score-piano-key black" data-play-midi="${base+p}" aria-label="${noteNames[p]}${base/12-1}" style="left:${[1,2,4,5,6][i]*12.5-3.6}%"><span>${noteNames[p]}</span></button>`).join('')}`;
+        const large=s.host.querySelector('.score-large-keys'),advanced=['accidentals','scales','keys'].includes(s.score.mode);
+        large.innerHTML=Array.from({length:13},(_,p)=>p).filter(p=>advanced||[0,2,4,5,7,9,11,12].includes(p)).map(p=>{
+            const flats={1:'D♭',3:'E♭',6:'G♭',8:'A♭',10:'B♭'},label=noteNames[p%12];
+            return `<button class="score-note-button" type="button" data-play-midi="${base+p}" aria-label="${label}${Math.floor((base+p)/12)-1}">${label}${flats[p]?` / ${flats[p]}`:''}<small>${Math.floor((base+p)/12)-1}</small></button>`;
+        }).join('');
         s.host.querySelector('.score-octave').textContent=`Keyboard: C${base/12-1}–C${base/12}`;
-        box.querySelectorAll('[data-play-midi]').forEach(button=>{
+        s.host.querySelectorAll('[data-play-midi]').forEach(button=>{
             button.onpointerdown=e=>{e.preventDefault();button.setPointerCapture(e.pointerId);press(+button.dataset.playMidi,button);};
             button.onpointerup=()=>release(button);button.onpointercancel=()=>release(button);
             button.onkeydown=e=>{if((e.key===' '||e.key==='Enter')&&!e.repeat){e.preventDefault();press(+button.dataset.playMidi,button);}};
@@ -202,7 +207,11 @@
         stop();const score=build(mode,options.clef||'treble',options.scale||'C major',Math.random(),options.notes,options.key,options.marking);
         current={host,score,index:0,token:0,sources:new Set(),ready:!!pianoBuffers,started:false,busy:false,demo:false,pressed:null};
         host.innerHTML=`<div class="score-game-heading"><div><p class="section-label">PLAY THE SCORE</p><h2>${modes[mode][0]}</h2></div><span class="score-progress"></span></div><p class="score-instruction">${score.timed?'Hold each key until the bar fills. During rests, stay silent.':'Play the highlighted note. The score moves when you get it right.'}${score.marking?' The piano sound follows the marked volume change.':''}</p><div class="score-settings"><label>Clef <select class="score-clef"><option value="treble" ${score.clef==='treble'?'selected':''}>Treble</option><option value="bass" ${score.clef==='bass'?'selected':''}>Bass</option></select></label>${mode==='scales'?`<label>Scale <select class="score-scale">${allScales.map(n=>`<option ${n===score.scale?'selected':''}>${escapeHTML(n)}</option>`).join('')}</select></label>`:''}<label>Tempo <select class="score-tempo"><option value="60">Slow</option><option value="90" selected>Medium</option><option value="120">Quick</option></select></label></div><div class="score-viewport">${scoreSvg(score)}</div><div class="score-hold" ${score.timed?'':'hidden'}><span class="score-hold-fill"></span></div><div class="score-keyboard" role="group" aria-label="Playable piano keyboard"></div><p class="score-octave"></p><p class="score-feedback" role="status" aria-live="polite">Press Start to enable piano sound.</p><div class="score-actions"><button class="button button-primary score-start" type="button">Start</button><button class="button button-secondary score-listen" type="button">Listen first</button><button class="button button-secondary score-new" type="button">New phrase</button><button class="text-button score-stop" type="button">Stop</button></div>`;
-        highlight();
+        const large=document.createElement('div');large.className='score-large-keys';large.setAttribute('role','group');large.setAttribute('aria-label','Large piano note buttons');host.querySelector('.score-keyboard').after(large);
+        const size=document.createElement('button');size.type='button';size.className='text-button score-size-toggle';size.textContent='Use larger keys';size.setAttribute('aria-pressed','false');host.querySelector('.score-keyboard').before(size);
+        size.onclick=()=>{const on=host.classList.toggle('use-large-keys');size.textContent=on?'Use piano keyboard':'Use larger keys';size.setAttribute('aria-pressed',String(on));};
+        host.querySelector('.score-keyboard').dataset.base='';highlight();
+        if(options.notes)host.querySelector('.score-clef').disabled=true;
         host.querySelector('.score-start').onclick=()=>start();host.querySelector('.score-listen').onclick=()=>start(true);
         const rerender=()=>render(host,mode,{...options,clef:host.querySelector('.score-clef').value,scale:host.querySelector('.score-scale')?.value});
         host.querySelector('.score-new').onclick=rerender;host.querySelector('.score-clef').onchange=rerender;host.querySelector('.score-scale')?.addEventListener('change',rerender);
@@ -225,8 +234,8 @@
     renderGuidedStep=function(){stop();current=null;previousStep();const course=courses[selectedCourseIndex],section=course.sections[lessonStep];
         let mode=null,notes=null;const clef=course.title==='Bass Clef'?'bass':'treble';
         if((course.title==='Treble Clef'&&lessonStep>=4)||(course.title==='Bass Clef'&&lessonStep>=2)){mode='notes';const n=clef==='bass'?3:4;notes=lessonStep===4&&clef==='treble'?['c4','d4','e4','d4']:['c'+n,'d'+n,'e'+n,'g'+n,'e'+n,'d'+n,'c'+n,'c'+n];}
-        else if(course.title==='Accidentals'&&lessonStep>=1)mode='accidentals';
-        else if(['Rhythm','Rests','Time Signatures'].includes(course.title)&&lessonStep===course.sections.length-1)mode='rhythm';
+        else if(course.title==='Accidentals'&&lessonStep>=1){mode='accidentals';notes=lessonStep===1?['c4','c#4','e4','e#4']:lessonStep===2?['d4','db4','b4','bb4']:['f#4','fn4','f#4','fn4'];}
+        else if((['Rhythm','Rests'].includes(course.title)&&lessonStep===course.sections.length-1)||(course.title==='Time Signatures'&&lessonStep===2))mode='rhythm';
         else if(course.title==='Intervals & Patterns')mode='patterns';
         else if(['Major Scales','Minor Scales'].includes(course.title)&&lessonStep>=2)mode='scales';
         else if(course.title==='Key Signatures'&&lessonStep>=2)mode='keys';
