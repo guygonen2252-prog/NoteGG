@@ -193,7 +193,7 @@
         stop();const s=current;s.demo=false;s.index=0;s.started=false;highlight();
         if(!await enable())return;
         s.started=true;s.demo=demo;s.host.querySelector('.score-start').textContent='Restart';
-        if(!demo){status(s.score.timed?'Press and hold the highlighted note.':'Play the highlighted note.');return;}
+        if(!demo){if(s.score.events[0].midi===null)rest();else status(s.score.timed?'Press and hold the highlighted note.':'Play the highlighted note.');return;}
         status('Listening to the phrase…');const token=s.token;
         function tick(){if(current!==s||s.token!==token)return;const e=s.score.events[s.index];if(!e){s.demo=false;s.started=false;status('Your turn. Press Start to play.');s.host.querySelector('.score-start').textContent='Start';return;}highlight();if(e.midi!==null)sound(e.midi,duration(e)*(e.articulation||1),e.volume);s.timer=setTimeout(()=>{s.index++;tick();},duration(e)*Math.max(1,e.articulation||1)*1000);}
         tick();
@@ -233,6 +233,7 @@
         else if(course.title==='Dynamics'&&lessonStep===2)mode='dynamics';
         else if(course.title==='Music Signs'&&[1,2,3].includes(lessonStep))mode='signs';
         if(!mode)return;
+        if(mode==='notes') {const label=/aria-label="([^"]*)"/.exec(section.visual?.()||'')?.[1]||'';const taught=label.match(/\b[a-g][#bn]?\d\b/gi);if(taught?.length)notes=taught.map(n=>n.toLowerCase());}
         const host=document.createElement('section');host.className='score-game lesson-score-game';
         document.querySelector('.inline-challenge').replaceWith(host);
         render(host,mode,{clef,notes,key:mode==='keys'?signatureRows.find(s=>s.title===section.title)?.visual.key:null,marking:mode==='signs'?(lessonStep===1?'Fermata':lessonStep===2?'Staccato':'Slur'):null,scale:mode==='scales'&&allScales.includes(section.title)?section.title:course.title==='Minor Scales'?'A minor':'C major'});
