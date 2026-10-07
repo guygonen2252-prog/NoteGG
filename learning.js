@@ -231,10 +231,10 @@ const signsSteps = [
 courses.splice(0,courses.length,
     {title:"Treble Clef",description:"Start here: piano keys, the staff and your first notes.",sections:trebleSteps},
     {title:"Bass Clef",description:"Find lower notes and connect both clefs.",sections:bassSteps},
+    {title:"Accidentals",description:"Half steps, sharps, flats and naturals.",sections:accidentalSteps},
     {title:"Rhythm",description:"Note shapes, lengths, dots and ties.",sections:rhythmSteps},
     {title:"Rests",description:"Read silence and keep your place.",sections:restSteps},
     {title:"Time Signatures",description:"Measures, counting, simple and compound time.",sections:meterSteps},
-    {title:"Accidentals",description:"Half steps, sharps, flats and naturals.",sections:accidentalSteps},
     {title:"Intervals & Patterns",description:"Read steps, skips and short phrases.",sections:intervalSteps},
     {title:"Major Scales",description:"Build the pattern; explore all 12 pitch classes.",sections:scaleSteps(false)},
     {title:"Minor Scales",description:"Build the minor pattern and explore 12 scales.",sections:scaleSteps(true)},
@@ -342,9 +342,18 @@ function signQuestion(name=choose(["Repeat","Fermata","Staccato","Accent","Slur"
 // Unlimited practice: manual next question gives time to understand feedback.
 const extraPractice={patterns:{title:"Melody Patterns",description:"Read steps, skips and repeated notes.",generate:()=>phraseQuestion()},intervals:{title:"Interval Reading",description:"Recognise distances on the staff.",generate:intervalQuestion},bars:{title:"Complete the Measure",description:"Choose the missing note value.",generate:buildBarQuestion},signatures:{title:"Key Signatures",description:"Match major and relative minor keys.",generate:()=>keyQuestion()},symbols:{title:"Signs & Dynamics",description:"Turn written instructions into meaning.",generate:()=>Math.random()<.5?dynamicQuestion():signQuestion()}};
 Object.entries(extraPractice).forEach(([id,exercise])=>{
-    const b=document.createElement("button");b.type="button";b.className="practice-card";
+    const b=document.createElement("button");b.type="button";b.className="practice-card";b.dataset.exercise=id;
     b.innerHTML=`<span class="practice-type">READING SKILLS</span><strong>${exercise.title}</strong><small>${exercise.description}</small><span class="card-link">Start →</span>`;
     b.onclick=()=>startExercise(id);document.querySelector(".practice-grid").append(b);
+});
+// Beginner path: recognise pitches, read durations/silence, build measures,
+// then follow melodies, intervals, scales, keys and expression. All remain open.
+const practiceLearningOrder = ["reading", "noteDuration", "rests", "bars", "patterns", "intervals", "scale", "signatures", "symbols"];
+const practiceGrid = document.querySelector(".practice-grid");
+practiceLearningOrder.forEach(id => {
+    const card = practiceGrid.querySelector(`[data-exercise="${id}"]`);
+    if (!card) throw new Error(`Missing practice card: ${id}`);
+    practiceGrid.append(card);
 });
 const practiceQuestionHost=document.createElement("div");practiceQuestionHost.id="extended-practice";practiceQuestionHost.className="hidden";
 document.querySelector(".exercise-workspace").append(practiceQuestionHost);
@@ -412,3 +421,4 @@ document.querySelector('[data-scale-group="both"] small').textContent="30 spelli
 document.querySelector('[data-scale-group="major"] small').textContent="15 key signatures";
 document.querySelector('[data-scale-group="minor"] small').textContent="15 key signatures";
 renderCourseGrid();
+
