@@ -48,7 +48,11 @@
         if (mode==='signs') marking=lessonMarking||['Staccato','Accent','Slur','Fermata'][Math.floor(seed*4)%4];
         let events=notes.map((n,i)=>event(n,'quarter',key,marking?(marking==='Crescendo'?.055+.14*i/(notes.length-1):.195-.14*i/(notes.length-1)):.12));
         if(mode==='signs') events=notes.map((n,i)=>({...event(n,'quarter',key,marking==='Accent'&&i===0?.2:.12),articulation:marking==='Staccato'?.3:marking==='Slur'?1.05:marking==='Fermata'&&i===notes.length-1?2:1}));
-        if(timed) events=[event(pool[0],'quarter'),event(null,'quarter'),event(pool[1],'half'),event(pool[2],'eighth'),event(pool[3],'eighth'),event(pool[4],'quarter'),event(null,'quarter'),event(pool[0],'quarter')];
+        if(timed) {
+            const bars=[['quarter','quarter-rest','half'],['half','quarter','quarter-rest'],['eighth','eighth','quarter','quarter-rest','quarter'],['quarter','sixteenth','sixteenth','eighth','quarter-rest','quarter'],['whole'],['half-rest','quarter','quarter'],['eighth-rest','eighth','quarter','half'],['sixteenth-rest','sixteenth','eighth','half','quarter']];
+            const first=bars[Math.floor(seed*bars.length)%bars.length],second=choose(bars.filter(b=>b.some(v=>v.endsWith('-rest'))));
+            events=[...first,...second].map((v,i)=>event(v.endsWith('-rest')?null:pool[i%5],v.replace('-rest','')));
+        }
         // Each bar is full: final shorter phrase is padded with written rests.
         const units=events.reduce((s,e)=>s+e.units,0);let remaining=(4-units%4)%4;
         for(const value of ['half','quarter','eighth','sixteenth']) while(remaining>=lengths[value]) {events.push(event(null,value,key));remaining-=lengths[value];}
@@ -169,7 +173,7 @@
         button.classList.add('is-pressed');
         if(e.midi!==m){sound(m,.18,.09);status('Try another key. The highlighted note stays in place.');setTimeout(()=>button.classList.remove('is-pressed'),180);return;}
         const sec=duration(e);sound(m,sec*(e.articulation||1),e.volume);s.busy=true;
-        if(!s.score.timed){status(s.score.marking?`${s.score.marking} — ${s.score.marking==='Crescendo'?'a little louder':'a little softer'}.`:'Correct.');const token=s.token;s.timer=setTimeout(()=>{button.classList.remove('is-pressed');if(current===s&&s.token===token)next();},250);return;}
+        if(!s.score.timed){status(s.score.mode==='dynamics'?`${s.score.marking} — ${s.score.marking==='Crescendo'?'a little louder':'a little softer'}.`:s.score.mode==='signs'?`${s.score.marking} — listen to the note's shape.`:'Correct.');const token=s.token;s.timer=setTimeout(()=>{button.classList.remove('is-pressed');if(current===s&&s.token===token)next();},s.score.mode==='signs'?sec*Math.max(1,e.articulation||1)*1000:250);return;}
         s.pressed={button,started:performance.now(),seconds:sec};status(`Hold the ${e.value} note.`);
         s.holdTimer=setInterval(()=>{if(current===s&&s.pressed)s.host.querySelector('.score-hold-fill').style.width=`${Math.min(100,(performance.now()-s.pressed.started)/(sec*10))}%`;},40);
         const token=s.token;s.timer=setTimeout(()=>{if(current===s&&s.token===token){button.classList.remove('is-pressed');next();}},sec*1000);
