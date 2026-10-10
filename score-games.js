@@ -114,7 +114,7 @@
     }
     function stop() {
         if(!current)return;
-        current.token++;clearTimeout(current.timer);clearInterval(current.holdTimer);
+        current.token++;clearTimeout(current.timer);clearInterval(current.holdTimer);clearInterval(current.transportTimer);
         current.sources.forEach(s=>{try{s.stop();}catch{}});current.sources.clear();
         current.host.querySelectorAll('.is-pressed').forEach(button=>button.classList.remove('is-pressed'));
         current.pressed=null;current.busy=false;
@@ -136,11 +136,43 @@
     function highlight() {
         const s=current,e=s.score.events[s.index];
         s.host.querySelectorAll('.score-event').forEach((g,i)=>{g.classList.toggle('is-current',i===s.index);g.classList.toggle('is-done',i<s.index);});
-        const g=s.host.querySelector(`[data-score-index="${s.index}"]`),viewport=s.host.querySelector('.score-viewport');
-        if(g) viewport.scrollTo({left:Math.max(0,Number(g.dataset.scoreX)-viewport.clientWidth*.35),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
         s.host.querySelector('.score-progress').textContent=e?`Measure ${Math.floor(s.score.events.slice(0,s.index).reduce((a,b)=>a+b.units,0)/4)+1}`:'Phrase complete';
         if(e?.midi!=null) keyboard(Math.floor(e.midi/12)*12);
         s.host.querySelector('.score-hold-fill').style.width='0%';
+        if(!s.started)moveScore(position(s.index)-70);
+    }
+    function position(index) {
+        const s=current,g=s.host.querySelector(`[data-score-index="${index}"]`);
+        if(g)return Number(g.dataset.scoreX)+8;
+        const last=s.host.querySelector(`[data-score-index="${s.score.events.length-1}"]`);
+        return Number(last.dataset.scoreX)+70;
+    }
+    function moveScore(x) {
+        const s=current,viewport=s.host.querySelector('.score-viewport');
+        s.host.querySelector('.score-sheet').style.transform=`translateX(${viewport.clientWidth*.35-x}px)`;
+    }
+    function eventMilliseconds(e) {return duration(e)*1000*((e.articulation||1)>1.5?e.articulation:1);}
+    function beginEvent(at) {
+        const s=current,e=s.score.events[s.index];
+        s.eventStart=at;s.answered=e.midi===null||s.demo;s.waiting=false;s.pressed=null;s.busy=false;highlight();
+        if(s.demo&&e.midi!==null)sound(e.midi,duration(e)*(e.articulation||1),e.volume);
+        status(s.demo?'Listening to the phrase…':e.midi===null?`${e.value} rest — stay silent.`:'Play as the note reaches the gold line.');
+    }
+    function transport() {
+        const s=current;if(!s?.started)return;const now=performance.now(),e=s.score.events[s.index];if(!e)return;
+        if(now<s.countInEnd){const remaining=s.countInEnd-now;s.host.querySelector('.score-progress').textContent=`Ready: ${Math.ceil(remaining/s.beatMs)}`;moveScore(position(0)-70*Math.min(1,remaining/(3*s.beatMs)));return;}
+        if(s.counting){s.counting=false;beginEvent(s.countInEnd);}
+        if(s.waiting){moveScore(position(s.index));return;}
+        const ms=eventMilliseconds(e),elapsed=now-s.eventStart;
+        if(!s.answered&&elapsed>Math.min(140,ms*.45)){s.waiting=true;moveScore(position(s.index));status('Waiting for this note. Play it to continue.');return;}
+        const fraction=Math.max(0,Math.min(1,elapsed/ms));
+        moveScore(position(s.index)+(position(s.index+1)-position(s.index))*fraction);
+        if(s.score.timed)s.host.querySelector('.score-hold-fill').style.width=`${fraction*100}%`;
+        if(elapsed>=ms&&s.answered){
+            const nextAt=s.eventStart+ms;s.host.querySelectorAll('.is-pressed').forEach(b=>b.classList.remove('is-pressed'));s.index++;s.pressed=null;
+            if(s.index===s.score.events.length){highlight();moveScore(position(s.index));clearInterval(s.transportTimer);s.started=false;s.demo=false;status('Phrase complete. Play it again or choose a new phrase.');s.host.querySelector('.score-start').textContent='Play again';return;}
+            beginEvent(nextAt);
+        }
     }
     function keyboard(base) {
         const s=current,box=s.host.querySelector('.score-keyboard');
@@ -160,34 +192,27 @@
             button.onkeyup=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();release(button);}};
         });
     }
-    function next() {
-        const s=current;s.busy=false;s.pressed=null;clearInterval(s.holdTimer);
-        s.index++;highlight();
-        if(s.index===s.score.events.length){status('Phrase complete. Play it again or choose a new phrase.');s.host.querySelector('.score-start').textContent='Play again';s.started=false;return;}
-        const e=s.score.events[s.index];
-        if(e.midi===null) rest();else status(s.score.timed?'Press and hold the highlighted note.':'Play the highlighted note.');
-    }
-    function rest() {
-        const s=current;s.busy=true;status(`${s.score.events[s.index].value} rest — stay silent.`);
-        const token=s.token;s.timer=setTimeout(()=>{if(current===s&&s.token===token)next();},duration(s.score.events[s.index])*1000);
-    }
     function press(m,button) {
         const s=current;if(!s||!s.ready)return;
         if(!s.started){status('Press Start first.');return;}
-        if(s.demo||s.busy){if(!s.demo&&s.score.events[s.index]?.midi===null)status('This is a rest. Stay silent.');return;}
+        if(s.demo)return;
+        if(s.counting){status('Wait for the count-in to finish.');return;}
         const e=s.score.events[s.index];if(!e)return;
+        if(e.midi===null){status('This is a rest. Stay silent.');return;}
+        if(s.answered){status('Wait for the next note to reach the line.');return;}
         button.classList.add('is-pressed');
-        if(e.midi!==m){sound(m,.18,.09);status('Try another key. The highlighted note stays in place.');setTimeout(()=>button.classList.remove('is-pressed'),180);return;}
-        const sec=duration(e);sound(m,sec*(e.articulation||1),e.volume);s.busy=true;
-        if(!s.score.timed){status(s.score.mode==='dynamics'?`${s.score.marking} — ${s.score.marking==='Crescendo'?'a little louder':'a little softer'}.`:s.score.mode==='signs'?`${s.score.marking} — listen to the note's shape.`:'Correct.');const token=s.token;s.timer=setTimeout(()=>{button.classList.remove('is-pressed');if(current===s&&s.token===token)next();},s.score.mode==='signs'?sec*Math.max(1,e.articulation||1)*1000:250);return;}
-        s.pressed={button,started:performance.now(),seconds:sec};status(`Hold the ${e.value} note.`);
-        s.holdTimer=setInterval(()=>{if(current===s&&s.pressed)s.host.querySelector('.score-hold-fill').style.width=`${Math.min(100,(performance.now()-s.pressed.started)/(sec*10))}%`;},40);
-        const token=s.token;s.timer=setTimeout(()=>{if(current===s&&s.token===token){button.classList.remove('is-pressed');next();}},sec*1000);
+        if(e.midi!==m){sound(m,.18,.09);status('Try another key. The score will wait if you miss the note.');setTimeout(()=>button.classList.remove('is-pressed'),180);return;}
+        const now=performance.now(),resuming=s.waiting;if(resuming)s.eventStart=now;
+        s.waiting=false;s.answered=true;
+        const sec=duration(e);sound(m,sec*(e.articulation||1),e.volume);
+        if(s.score.timed){s.pressed={button,endAt:s.eventStart+eventMilliseconds(e)};status(`Hold the ${e.value} note until the bar fills.`);}
+        else status(resuming?'Continuing. Follow the next note.':'In time. Follow the next note.');
     }
     function release(button) {
         button.classList.remove('is-pressed');const s=current;if(!s?.pressed||s.pressed.button!==button)return;
-        if(performance.now()-s.pressed.started<s.pressed.seconds*1000-80){
-            stop();s.sources.clear();s.host.querySelector('.score-hold-fill').style.width='0%';status('Released early. Hold this note until the bar fills.');
+        if(performance.now()<s.pressed.endAt-80){
+            s.sources.forEach(source=>{try{source.stop();}catch{}});s.sources.clear();s.pressed=null;s.answered=false;s.waiting=true;
+            moveScore(position(s.index));s.host.querySelector('.score-hold-fill').style.width='0%';status('Released early. Hold this note to continue.');
         }
     }
     async function enable() {
@@ -198,16 +223,14 @@
     async function start(demo=false) {
         stop();const s=current;s.demo=false;s.index=0;s.started=false;highlight();
         if(!await enable())return;
-        s.started=true;s.demo=demo;s.host.querySelector('.score-start').textContent='Restart';
-        if(!demo){if(s.score.events[0].midi===null)rest();else status(s.score.timed?'Press and hold the highlighted note.':'Play the highlighted note.');return;}
-        status('Listening to the phrase…');const token=s.token;
-        function tick(){if(current!==s||s.token!==token)return;const e=s.score.events[s.index];if(!e){s.demo=false;s.started=false;status('Your turn. Press Start to play.');s.host.querySelector('.score-start').textContent='Start';return;}highlight();if(e.midi!==null)sound(e.midi,duration(e)*(e.articulation||1),e.volume);s.timer=setTimeout(()=>{s.index++;tick();},duration(e)*Math.max(1,e.articulation||1)*1000);}
-        tick();
+        s.started=true;s.demo=demo;s.counting=true;s.waiting=false;s.answered=false;s.beatMs=60000/Number(s.host.querySelector('.score-tempo').value);s.countInEnd=performance.now()+3*s.beatMs;s.host.querySelector('.score-start').textContent='Restart';
+        status('Follow the count-in, then play at the gold line.');
+        const token=s.token;s.transportTimer=setInterval(()=>{if(current===s&&s.token===token)transport();},16);transport();
     }
     function render(host,mode,options={}) {
         stop();const score=build(mode,options.clef||'treble',options.scale||'C major',Math.random(),options.notes,options.key,options.marking);
         current={host,score,index:0,token:0,sources:new Set(),ready:!!pianoBuffers,started:false,busy:false,demo:false,pressed:null};
-        host.innerHTML=`<div class="score-game-heading"><div><p class="section-label">PLAY THE SCORE</p><h2>${modes[mode][0]}</h2></div><span class="score-progress"></span></div><p class="score-instruction">${score.timed?'Hold each key until the bar fills. During rests, stay silent.':'Play the highlighted note. The score moves when you get it right.'}${score.marking?' The piano sound follows the marked volume change.':''}</p><div class="score-settings"><label>Clef <select class="score-clef"><option value="treble" ${score.clef==='treble'?'selected':''}>Treble</option><option value="bass" ${score.clef==='bass'?'selected':''}>Bass</option></select></label>${mode==='scales'?`<label>Scale <select class="score-scale">${allScales.map(n=>`<option ${n===score.scale?'selected':''}>${escapeHTML(n)}</option>`).join('')}</select></label>`:''}<label>Tempo <select class="score-tempo"><option value="60">Slow</option><option value="90" selected>Medium</option><option value="120">Quick</option></select></label></div><div class="score-viewport">${scoreSvg(score)}</div><div class="score-hold" ${score.timed?'':'hidden'}><span class="score-hold-fill"></span></div><div class="score-keyboard" role="group" aria-label="Playable piano keyboard"></div><p class="score-octave"></p><p class="score-feedback" role="status" aria-live="polite">Press Start to enable piano sound.</p><div class="score-actions"><button class="button button-primary score-start" type="button">Start</button><button class="button button-secondary score-listen" type="button">Listen first</button><button class="button button-secondary score-new" type="button">New phrase</button><button class="text-button score-stop" type="button">Stop</button></div>`;
+        host.innerHTML=`<div class="score-game-heading"><div><p class="section-label">PLAY THE SCORE</p><h2>${modes[mode][0]}</h2></div><span class="score-progress"></span></div><p class="score-instruction">${score.timed?'Play at the gold line and hold until the bar fills. Stay silent during rests.':'Play each note as it reaches the gold line. The score waits if you miss a note.'}${score.marking?' The piano sound follows the marked volume change.':''}</p><div class="score-settings"><label>Clef <select class="score-clef"><option value="treble" ${score.clef==='treble'?'selected':''}>Treble</option><option value="bass" ${score.clef==='bass'?'selected':''}>Bass</option></select></label>${mode==='scales'?`<label>Scale <select class="score-scale">${allScales.map(n=>`<option ${n===score.scale?'selected':''}>${escapeHTML(n)}</option>`).join('')}</select></label>`:''}<label>Tempo <select class="score-tempo"><option value="60">Slow</option><option value="90" selected>Medium</option><option value="120">Quick</option></select></label></div><div class="score-viewport"><div class="score-sheet">${scoreSvg(score)}</div><span class="score-strike-line" aria-hidden="true"></span></div><div class="score-hold"><span class="score-hold-fill"></span></div><div class="score-keyboard" role="group" aria-label="Playable piano keyboard"></div><p class="score-octave"></p><p class="score-feedback" role="status" aria-live="polite">Press Start to enable piano sound.</p><div class="score-actions"><button class="button button-primary score-start" type="button">Start</button><button class="button button-secondary score-listen" type="button">Listen first</button><button class="button button-secondary score-new" type="button">New phrase</button><button class="text-button score-stop" type="button">Stop</button></div>`;
         const large=document.createElement('div');large.className='score-large-keys';large.setAttribute('role','group');large.setAttribute('aria-label','Large piano note buttons');host.querySelector('.score-keyboard').after(large);
         const size=document.createElement('button');size.type='button';size.className='text-button score-size-toggle';size.textContent='Use larger keys';size.setAttribute('aria-pressed','false');host.querySelector('.score-keyboard').before(size);
         if(host.classList.contains('use-large-keys')){size.textContent='Use piano keyboard';size.setAttribute('aria-pressed','true');}
@@ -254,3 +277,4 @@
     // Read-only hooks for exhaustive notation/pitch checks.
     window.NoteGGScoreChecks={build,scoreSvg,midi,modes:Object.keys(modes)};
 })();
+
